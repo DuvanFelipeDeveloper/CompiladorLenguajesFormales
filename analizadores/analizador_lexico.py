@@ -3,9 +3,9 @@ import ahocorasick
 def build_automata():
     A = ahocorasick.Automaton()
     keywords = {
-        "ruby": ["def", "puts", "end"],
+        "ruby": ["def ", "puts ", "end ","print "],
         "julia": ["function", "println"],
-        "perl": ["sub", "print"]
+        "perl": ["sub ", "print "]
     }
 
     for lang, words in keywords.items():
@@ -14,8 +14,10 @@ def build_automata():
     A.make_automaton()
     return A
 
-def detect_language(code, automata):
+def detect_language(code):
+    automata = build_automata()
     results = []
+   
     for _, (lang, word) in automata.iter(code):
         results.append(lang)
     return results
@@ -153,12 +155,12 @@ if (exists $currencies{$from_currency} && exists $currencies{$to_currency}) {
     ''',
 
 ]
-automata = build_automata()
-for idx, example in enumerate(examples):
 
-    detected_languages = detect_language(example, automata)
-    if detected_languages:
-        print(f" {idx + 1}: es {detected_languages}")
-    else:
-        print(f" {idx + 1}: no detectado")
+# for idx, example in enumerate(examples):
+
+    
+#     if detected_languages:
+#         print(f" {idx + 1}: es {detected_languages}")
+#     else:
+#         print(f" {idx + 1}: no detectado")
 
