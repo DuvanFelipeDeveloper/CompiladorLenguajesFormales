@@ -1,4 +1,5 @@
 import re
+from pyparsing import *
 
 def validate_code_julia(code):
     patterns = {
@@ -118,3 +119,37 @@ result = validate_code_julia(sample_code)
 for pattern_name, occurrences in result.items():
     print(f'Expresion regular {pattern_name}: {occurrences} ')
 
+
+
+
+#Prototipo Deteccion de Gramatica regular 
+
+# Definir tokens
+identifier = Word(alphanums + '_')
+keyword = Word(alphanums + '_')
+equals = Suppress('=')
+colon = Suppress(':')
+string = Suppress('"') + Word(alphanums + ' ') + Suppress('"')
+number = Word("0123456789.")
+
+# Reglas de producción
+import_statement = Group(keyword("using") + keyword("Money"))
+configure_statement = Group(keyword("Money.Rails.configure") + keyword("do") + keyword("config") + Suppress('=') + Suppress("Money.Bank.CurrencyLayer()"))
+print_statement = Group(keyword("println(") + string("message") + ")")
+user_input_statement = Group(keyword("println(") + string("prompt") + colon + identifier("input") + "(" + ")" + equals + identifier("var") + ")")
+if_statement = Group(keyword("if") + identifier("condition") + restOfLine + "println(" + string("message") + ")" + "else" + restOfLine + "println(" + string("message") + ")" + "end")
+for_loop = Group(keyword("for") + identifier("currency") + keyword("in") + identifier("currencies") + restOfLine + "println(" + string("message") + ")" + "end")
+assignment = Group(identifier("var") + equals + (string | number | identifier))
+function_call = Group(identifier("func") + "(" + Optional(identifier("args")) + ")" + equals + identifier("var"))
+
+# Gramática completa
+expression = (import_statement | configure_statement | print_statement | user_input_statement | if_statement | for_loop | assignment | function_call)
+
+# Parsear el código
+results = expression.searchString(sample_code)
+
+# Mostrar resultados
+
+for result in results:
+    print(result)
+    print("\n")
