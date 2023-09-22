@@ -74,7 +74,7 @@ def validate_code_ruby(code):
 
 # Ejemplo de código para detectar el paradigma
 sample_code = """
-using Money
+using using Money
 using Money.CurrencyLayer
 
 # Configurar el conversor de divisas con la API de CurrencyLayer (requiere una clave API válida)
