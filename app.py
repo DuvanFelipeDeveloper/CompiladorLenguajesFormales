@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import main 
 
 app = Flask(__name__)
 
@@ -9,8 +10,8 @@ def compilador():
         data = request.json  # Suponemos que el cliente envía un JSON con un campo llamado 'texto'
         if 'texto' in data:
             texto_entrada = data['texto']
-            respuesta = "esto es un compilador"
-            return jsonify({'respuesta': respuesta})
+            lenguaje, paradigma = main.analizador(texto_entrada)
+            return jsonify({'lenguaje':lenguaje ,'paradigma' : paradigma })
         else:
             return jsonify({'error': 'El campo "texto" es requerido'}), 400
 
