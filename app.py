@@ -10,8 +10,8 @@ def compilador():
         data = request.json  # Suponemos que el cliente envía un JSON con un campo llamado 'texto'
         if 'texto' in data:
             texto_entrada = data['texto']
-            lenguaje, paradigma, expressionAnalysis = main.analizador(texto_entrada)
-            return jsonify({'lenguaje':lenguaje ,'paradigma' : paradigma, 'ExpresionesRegulares' : expressionAnalysis})
+            lenguaje, paradigma, expressionAnalysis,error = main.analizador(texto_entrada)
+            return jsonify({'lenguaje':lenguaje ,'paradigma' : paradigma, 'ExpresionesRegulares' : expressionAnalysis ,'error' : error})
         else:
             return jsonify({'error': 'El campo "texto" es requerido'}), 400
 

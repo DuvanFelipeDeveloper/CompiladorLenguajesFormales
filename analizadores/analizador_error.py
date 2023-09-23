@@ -14,12 +14,15 @@ def verificar_equilibrio_ruby(codigo):
         if final:
             if not stack:
                 print(f"Falta un 'end' en la línea {numero_linea}")
+                return f"Falta un 'end' en la línea {numero_linea}"
             else:
                 stack.pop()
 
     # Verificar si hay 'end' sin pareja
     for numero_linea,estructura  in stack:
         print(f"falta un end para '{estructura}' en el código linea '{numero_linea}'")
+        return f"falta un end para '{estructura}' en el código linea '{numero_linea}'"
+      
 
 # codigo_ruby = """
 
@@ -115,8 +118,10 @@ def validar_estructuras_ruby(codigo_ruby):
                     for token in re.findall(r'\w+|\d+|\S', condicion):
                         if token.isalpha() and token not in variables_definidas and token != "then":
                             print(f"Error en la línea {numero_linea}: La variable '{token}' en la condición del '{estructura}' no está definida en líneas anteriores.")
+                            return f"Error en la línea {numero_linea}: La variable '{token}' en la condición del '{estructura}' no está definida en líneas anteriores."
                 else:
                     print(f"Error en la línea {numero_linea}: La línea '{linea.strip()}' no tiene la sintaxis correcta de un '{estructura}'.")
+                    return f"Error en la línea {numero_linea}: La línea '{linea.strip()}' no tiene la sintaxis correcta de un '{estructura}'."
 
         # Buscar variables definidas en líneas anteriores
         for variable in re.findall(r'\w+', linea):

@@ -1,6 +1,7 @@
 import analizadores.analizador_lexico as al
 import analizadores.analizador_paradigma as ap
 import analizadores.analizador_sintactico as asi
+import analizadores.analizador_error as ae
 from collections import Counter
 
 def analizador(code):
@@ -19,5 +20,16 @@ def analizador(code):
         expressionAnalysis = validation_functions[lenguaje](code)
     else:
         expressionAnalysis ="no compatible"
-    return lenguaje, paradigma, expressionAnalysis
+    
+    error=ae.verificar_equilibrio_ruby(code)
+
+    if(not error):
+        error =ae.validar_estructuras_ruby(code)
+        if(not error):
+            error = ""
+        
+    
+
+    return lenguaje, paradigma, expressionAnalysis,error
+    
 

@@ -17,6 +17,7 @@ def consumir_api():
                 response_text.insert("1.0",f'Expresion regular {pattern_name}: {occurrences} ' +  "\n")
             response_text.insert("1.0","Paradigma " + analysis["paradigma"] +  "\n")
             response_text.insert("1.0","Lenguaje " + analysis["lenguaje"] +  "\n")
+            response_text.insert("1.0","error " + analysis["error"] +  "\n")
         else:
             response_text.delete("1.0", "end")
             response_text.insert("1.0", "Error: No se pudo obtener datos de la API")
