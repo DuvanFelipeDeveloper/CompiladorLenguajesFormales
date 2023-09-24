@@ -24,76 +24,7 @@ def verificar_equilibrio_ruby(codigo):
         return f"falta un end para '{estructura}' en el código linea '{numero_linea}'"
       
 
-# codigo_ruby = """
 
-# if true
-#   puts "Esto es verdad."
-# else
-#   puts "Esto es falso."
-# end
-
-
-# unless false
-#   puts "Esto es verdad también."
-# else
-#   puts "Esto es falso también."
-# end
-
-
-# i = 0
-# while i < 5
-#   puts "Iteración #{i}"
-#   i += 1
-# end
-
-
-# j = 0
-# until j >= 5
-#   puts "Iteración inversa #{j}"
-#   j += 1
-# end
-
-
-# for k in 1..3
-#   puts ""
-# end
-
-
-# fruta = "manzana"
-# case fruta
-# when "manzana"
-#   puts "Es una manzana."
-# when "banana"
-#   puts "Es una banana."
-# else
-#   puts "No es ni una manzana ni una banana."
-# end
-
-
-# class MiClase
-#   def initialize(nombre)
-#     @nombre = nombre
-#   end
-
-#   def saludar
-#     puts "Hola, soy #{@nombre}."
-#   end
-# end
-
-# objeto = MiClase.new("Ruby")
-# objeto.saludar
-
-
-# def mi_metodo(parametro)
-#   puts "Este es mi método con el parámetro #{parametro}."
-# end
-
-# mi_metodo("ejemplo")
-
-
-# """
-
-# verificar_equilibrio_ruby(codigo_ruby)
 
 
 

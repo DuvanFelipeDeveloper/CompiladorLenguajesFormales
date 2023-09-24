@@ -21,7 +21,7 @@ def evaluate_ruby_line(line):
             if variable_name not in variables:
                 if not (variable_name == "puts") :
                     print(line)
-                   
+                    print(variable_name)
                     if re.match(patron, line):
                         return str(variable_name),1
                     else:
@@ -143,16 +143,21 @@ def compilar(code):
          
             else:
 
-                if((not enif or ifvalid) and not ("end" in line)):
+                if((not enif or ifvalid) and not ("end" in line) and not ("else" in line)):
         
                     evaluate, status = evaluate_ruby_line(line)
                     if status == 1:
                         output.append(evaluate)
                     elif status == 0 :
                         return evaluate
+                elif("else" in line and not ifvalid):
+                    print("entra")
+                    ifvalid=True
+                    enif=True
                 elif("end" in line):
                     ifvalid=False
                     enif=False
+                
                 
     print(variables)
     return output
