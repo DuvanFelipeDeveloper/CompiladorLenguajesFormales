@@ -2,6 +2,7 @@ import analizadores.analizador_lexico as al
 import analizadores.analizador_paradigma as ap
 import analizadores.analizador_sintactico as asi
 import analizadores.analizador_error as ae
+import analizadores.compilador  as compilador
 from collections import Counter
 
 def analizador(code):
@@ -27,9 +28,10 @@ def analizador(code):
         error =ae.validar_estructuras_ruby(code)
         if(not error):
             error = ""
-        
+    output = compilador.compilar(code)
+    
     
 
-    return lenguaje, paradigma, expressionAnalysis,error
+    return lenguaje, paradigma, expressionAnalysis,error,output
     
 
