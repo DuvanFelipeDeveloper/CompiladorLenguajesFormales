@@ -8,6 +8,15 @@ variable_declaration_pattern = r'^\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)$'
 variable_usage_pattern = r'\b([a-zA-Z_][a-zA-Z0-9_]*)\b'
 patron = r'^\s*puts\s+"[^"]*"'
 
+
+
+patron_bloque_datos = r"'\w+' => \{[^}]*\}"
+patron_inicio_bloque = r"'[\w\s]+' => \{\s*"
+patron_bloque = r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+,\s*)"
+patron_bloque_penultimo= r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+\s*)"
+patron_fin_bloque = r"\s*\}"
+
+
 # Función para evaluar una línea de código Ruby
 def evaluate_ruby_line(line):
     match_declaration = re.match(variable_declaration_pattern, line)
@@ -184,4 +193,56 @@ def diccionario(code):
     
     return exchange_rates_dict
 
+
+
+def verificar_errores_linea_por_linea(bloque, numero_bloque):
+    errores = []
+    lineas = bloque.strip().split('\n')
+    total_lineas = len(lineas)  
+    
+    inicio_bloque_match = re.match(patron_inicio_bloque, lineas[0].strip())
+    if inicio_bloque_match:
+        inicio_bloque = inicio_bloque_match.group(0)
+        print(f"Inicio del bloque {numero_bloque}: {inicio_bloque}")
+    else:
+        print(f"En el bloque {numero_bloque}, línea 1: El bloque debe comenzar con una clave seguida de ' => {{'")
+        return True  
+
+    for i, linea in enumerate(lineas, start=1):
+        if i == 1:
+            continue
+        if i == total_lineas:  
+            if not re.match(patron_fin_bloque, linea.strip()):
+                errores.append(f"En el bloque {numero_bloque}, línea {i}: El bloque debe finalizar con '}}'")
+        elif i == total_lineas - 1: 
+            bloque_match = re.match(patron_bloque_penultimo, linea.strip())
+            if not bloque_match:
+                errores.append(f"En el bloque {numero_bloque}, línea {i}: Estructura incorrecta en la línea.")
+        else:
+            bloque_match = re.match(patron_bloque, linea.strip())
+            if not bloque_match:
+                errores.append(f"En el bloque {numero_bloque}, línea {i}: Estructura incorrecta en la línea.")
+            else:
+                bloque = bloque_match.group(0)
+                print(f"Línea {i} del bloque {numero_bloque}: {bloque}")
+
+    if errores:
+        for error in errores:
+            print(error)
+        return True  
+    else:
+        return False  
+
+
+
+def procesar_bloques(hash_str):
+    bloques = re.findall(patron_bloque_datos, hash_str)
+    errores_encontrados = []
+
+    for i, bloque in enumerate(bloques, start=1):
+        errores_bloque = verificar_errores_linea_por_linea(bloque, i)
+        if errores_bloque:
+            errores_encontrados.extend(errores_bloque)
+
+    return errores_encontrados
 
