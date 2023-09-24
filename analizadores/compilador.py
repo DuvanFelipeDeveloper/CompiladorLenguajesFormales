@@ -184,4 +184,4 @@ def diccionario(code):
     
     return exchange_rates_dict
 
-
+ 

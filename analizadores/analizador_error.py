@@ -36,7 +36,7 @@ def validar_estructuras_ruby(codigo_ruby):
         r'^\s*if\s*(\([^)]+\))?([^:]+)$': "if",
         r'^\s*while\s*(\([^)]+\))?([^:]+)$': "while",
         r'^\s*elsif\s*(\([^)]+\))?([^:]+)$': "elsif",
-        r'^\s*unless\s*(\([^)]+\))?([^:]+)$': "unless",
+        r'^\s*unless\s*(\([^)]+\))?([^:]+)$': "unless", 
         r'^\s*until\s*(\([^)]+\))?([^:]+)$': "until"
     }
 
