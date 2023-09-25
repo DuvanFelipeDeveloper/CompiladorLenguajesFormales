@@ -1,14 +1,16 @@
 import tkinter as tk
 from tkinter import scrolledtext
-import requests , jsonify
+import requests 
 
 def consumir_api():
+    print("aca algo hace")
     url = "http://127.0.0.1:5000/api/compilador"  
     texto_a_enviar = input_text.get("1.0", "end-1c")
-    
+    print("aca algo hace 2")
     try:
-    
+        print("aca algo hace 3")
         response = requests.post(url, json={"texto": texto_a_enviar})
+        print("aca algo hace 4")
         if response.status_code == 200:
             analysis = response.json()
             response_text.delete("1.0", "end")
@@ -18,7 +20,9 @@ def consumir_api():
             response_text.insert("1.0","Paradigma " + analysis["paradigma"] +  "\n")
             response_text.insert("1.0","Lenguaje " + analysis["lenguaje"] +  "\n")
             response_text.insert("1.0","error " + analysis["error"] +  "\n")
-            response_text.insert("1.0","salida " + analysis["output"][0] +  "\n")
+
+            for output in analysis["output"]:
+                response_text.insert("1.0","salida " + output+  "\n")
         else:
             response_text.delete("1.0", "end")
             response_text.insert("1.0", "Error: No se pudo obtener datos de la API")

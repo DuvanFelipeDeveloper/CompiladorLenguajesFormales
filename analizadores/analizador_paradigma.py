@@ -1,5 +1,5 @@
 from pygments.lexers import guess_lexer
-import ahocorasick
+
 
 def detect_paradigm(code):
     # Dividir el código en líneas, espacios y el carácter ":"
@@ -47,48 +47,6 @@ def detect_paradigm(code):
 
     return predominant_paradigm
 
-# Ejemplo de código para detectar el paradigma
-sample_code = """
-using Money
-using Money.CurrencyLayer
 
-# Configurar el conversor de divisas con la API de CurrencyLayer (requiere una clave API válida)
-Money.Rails.configure do config
-    config.default_bank = Money.Bank.CurrencyLayer()
-    config.default_currency = "USD"
-    config.locale_backend = :i18n
-end
 
-# Mostrar las monedas disponibles para conversión
-currencies = keys(Money.Currency.table)
-println("Monedas disponibles para conversión:")
-for currency in currencies
-    println(currency)
-end
 
-# Solicitar al usuario ingresar la moneda de origen y destino
-println("Ingresa la moneda de origen (ejemplo: USD): ")
-from_currency = uppercase(strip(readline()))
-
-println("Ingresa la moneda de destino (ejemplo: EUR): ")
-to_currency = uppercase(strip(readline()))
-
-# Verificar si las monedas ingresadas son válidas
-if from_currency in keys(Money.Currency.table) && to_currency in keys(Money.Currency.table)
-    println("Ingresa la cantidad en $from_currency: ")
-    amount = parse(Float64, strip(readline()))
-
-    # Realizar la conversión de divisas
-    money = Money(amount * 100, from_currency)
-    converted_money = exchange_to(money, to_currency)
-    converted_amount = to_float(converted_money) / 100
-
-    println("$amount $from_currency es igual a $converted_amount $to_currency")
-else
-    println("Moneda de origen o destino no válida. Asegúrate de usar códigos de moneda válidos.")
-end
-
-"""
-
-paradigm=detect_paradigm(sample_code)
-print(f"El paradigma predominante es: {paradigm}")

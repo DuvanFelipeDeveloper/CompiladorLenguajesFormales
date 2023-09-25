@@ -22,12 +22,12 @@ def verificar_equilibrio_ruby(codigo):
     for numero_linea,estructura  in stack:
         print(f"falta un end para '{estructura}' en el código linea '{numero_linea}'")
         return f"falta un end para '{estructura}' en el código linea '{numero_linea}'"
+    resultado =validar_diccionario_ruby(codigo)
+
+    if resultado:
+        return str(resultado)
+   
       
-
-
-
-
-
 
 def validar_estructuras_ruby(codigo_ruby):
     lineas = codigo_ruby.split('\n')
@@ -48,8 +48,9 @@ def validar_estructuras_ruby(codigo_ruby):
                     condicion = match.group(2).strip()
                     for token in re.findall(r'\w+|\d+|\S', condicion):
                         if token.isalpha() and token not in variables_definidas and token != "then":
-                            print(f"Error en la línea {numero_linea}: La variable '{token}' en la condición del '{estructura}' no está definida en líneas anteriores.")
-                            return f"Error en la línea {numero_linea}: La variable '{token}' en la condición del '{estructura}' no está definida en líneas anteriores."
+                            if not (token == "key"):
+                                print(f"Error en la línea {numero_linea}: La variable '{token}' en la condición del '{estructura}' no está definida en líneas anteriores.")
+                                return f"Error en la línea {numero_linea}: La variable '{token}' en la condición del '{estructura}' no está definida en líneas anteriores."
                 else:
                     print(f"Error en la línea {numero_linea}: La línea '{linea.strip()}' no tiene la sintaxis correcta de un '{estructura}'.")
                     return f"Error en la línea {numero_linea}: La línea '{linea.strip()}' no tiene la sintaxis correcta de un '{estructura}'."
@@ -81,64 +82,47 @@ def validar_for_ruby(codigo_ruby):
                 print(f"Error en la línea {numero_linea}: La línea '{linea.strip()}' no tiene la sintaxis correcta de un 'for'.")
 
 
-# Ejemplo de código Ruby para validar
-codigo_ruby = """
-x = 5
-y = 3
-
-if x > 5
-  puts "Mayor que 5"
-elsif y < 3
-  puts "Menor que 3"
-end
-
-z = 0
-
-while (z == 0)
-  puts "Igual a 0"
-end
-
-puts "Esto no es una estructura de control"
-
-if (a > 10)
-  puts "Mayor que 10"
-end
-
-puts "Esto tampoco"
-
-while(b < 2)
-  puts "Menor que 2"
-end
-
-unless(c > 5)
-  puts "unless(condicional) es válido"
-end
-
-until d > 7
-  puts "until(condicional) es válido"
-end
-
-
-
-for i in 1..5
-  puts i
-end
-
-for texto in ["a", "b", "c"]
-  puts texto
-end
-
-for 123 in 1..10
-  puts 123
-end
-"""
-
-# validar_estructuras_ruby(codigo_ruby)
-validar_for_ruby(codigo_ruby)
-
-
-
-
+def validar_diccionario_ruby(texto):
+ 
+    patron_corchetes = re.compile(r'[{}]')
+    
+    # Pila para rastrear los corchetes abiertos
+    pila_corchetes = []
+    
+    # Variable para rastrear si estamos dentro de un diccionario
+    dentro_diccionario = False
+    
+    # Divide el texto en líneas y realiza un seguimiento del número de línea actual
+    lineas = texto.split('\n')
+    numero_linea = 0
+    
+    nlinea=0
+    for linea in lineas:
+        numero_linea += 1
+        # Verifica si la línea contiene corchetes
+        if re.search(patron_corchetes, linea):
+            for caracter in linea:
+                if caracter == '{':
+                    pila_corchetes.append('{')
+                    # Si encontramos una '{', verificamos si estamos dentro de un diccionario
+                    if not dentro_diccionario and re.search(r'\w+\s*=\s*\{', linea):
+                        dentro_diccionario = True
+                    else:
+                        nlinea= numero_linea
+                elif caracter == '}':
+                    if not pila_corchetes:
+                        return f"Error: Corchete de cierre sin coincidencia en la línea {numero_linea}"
+                    pila_corchetes.pop()
+    
+    # Si quedan corchetes sin cerrar en la pila, hay un error
+    if pila_corchetes:
+        return "Error: Corchete de apertura sin coincidencia"
+    
+    # Si no se encontraron errores de corchetes y estamos dentro de un diccionario, no hay problemas de sintaxis
+    if not dentro_diccionario:
+        return f"Error: No se encontraron estructuras en la linea {nlinea}"
+ 
+        
 
 
 

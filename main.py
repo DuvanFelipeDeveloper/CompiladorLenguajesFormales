@@ -30,7 +30,7 @@ def analizador(code):
             error = ""
     output = compilador.compilar(code)
     
-    
+    print(lenguaje, paradigma, expressionAnalysis,error,output)
 
     return lenguaje, paradigma, expressionAnalysis,error,output
     

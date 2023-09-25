@@ -72,84 +72,30 @@ def validate_code_ruby(code):
 
     return matches
 
-# Ejemplo de código para detectar el paradigma
-sample_code = """
-using using Money
-using Money.CurrencyLayer
-
-# Configurar el conversor de divisas con la API de CurrencyLayer (requiere una clave API válida)
-Money.Rails.configure do config
-    config.default_bank = Money.Bank.CurrencyLayer()
-    config.default_currency = "USD"
-    config.locale_backend = :i18n
-end
-
-# Mostrar las monedas disponibles para conversión
-currencies = keys(Money.Currency.table)
-println("Monedas disponibles para conversión:")
-for currency in currencies
-    println(currency)
-end
-
-# Solicitar al usuario ingresar la moneda de origen y destino
-println("Ingresa la moneda de origen (ejemplo: USD): ")
-from_currency = uppercase(strip(readline()))
-
-println("Ingresa la moneda de destino (ejemplo: EUR): ")
-to_currency = uppercase(strip(readline()))
-
-# Verificar si las monedas ingresadas son válidas
-if from_currency in keys(Money.Currency.table) && to_currency in keys(Money.Currency.table)
-    println("Ingresa la cantidad en $from_currency: ")
-    amount = parse(Float64, strip(readline()))
-
-    # Realizar la conversión de divisas
-    money = Money(amount * 100, from_currency)
-    converted_money = exchange_to(money, to_currency)
-    converted_amount = to_float(converted_money) / 100
-
-    println("$amount $from_currency es igual a $converted_amount $to_currency")
-else
-    println("Moneda de origen o destino no válida. Asegúrate de usar códigos de moneda válidos.")
-end
-
-"""
-
-result = validate_code_julia(sample_code)
-for pattern_name, occurrences in result.items():
-    print(f'Expresion regular {pattern_name}: {occurrences} ')
 
 
 
+# #Prototipo Deteccion de Gramatica regular 
 
-#Prototipo Deteccion de Gramatica regular 
+# # Definir tokens
+# identifier = Word(alphanums + '_')
+# keyword = Word(alphanums + '_')
+# equals = Suppress('=')
+# colon = Suppress(':')
+# string = Suppress('"') + Word(alphanums + ' ') + Suppress('"')
+# number = Word("0123456789.")
 
-# Definir tokens
-identifier = Word(alphanums + '_')
-keyword = Word(alphanums + '_')
-equals = Suppress('=')
-colon = Suppress(':')
-string = Suppress('"') + Word(alphanums + ' ') + Suppress('"')
-number = Word("0123456789.")
+# # Reglas de producción
+# import_statement = Group(keyword("using") + keyword("Money"))
+# configure_statement = Group(keyword("Money.Rails.configure") + keyword("do") + keyword("config") + Suppress('=') + Suppress("Money.Bank.CurrencyLayer()"))
+# print_statement = Group(keyword("println(") + string("message") + ")")
+# user_input_statement = Group(keyword("println(") + string("prompt") + colon + identifier("input") + "(" + ")" + equals + identifier("var") + ")")
+# if_statement = Group(keyword("if") + identifier("condition") + restOfLine + "println(" + string("message") + ")" + "else" + restOfLine + "println(" + string("message") + ")" + "end")
+# for_loop = Group(keyword("for") + identifier("currency") + keyword("in") + identifier("currencies") + restOfLine + "println(" + string("message") + ")" + "end")
+# assignment = Group(identifier("var") + equals + (string | number | identifier))
+# function_call = Group(identifier("func") + "(" + Optional(identifier("args")) + ")" + equals + identifier("var"))
 
-# Reglas de producción
-import_statement = Group(keyword("using") + keyword("Money"))
-configure_statement = Group(keyword("Money.Rails.configure") + keyword("do") + keyword("config") + Suppress('=') + Suppress("Money.Bank.CurrencyLayer()"))
-print_statement = Group(keyword("println(") + string("message") + ")")
-user_input_statement = Group(keyword("println(") + string("prompt") + colon + identifier("input") + "(" + ")" + equals + identifier("var") + ")")
-if_statement = Group(keyword("if") + identifier("condition") + restOfLine + "println(" + string("message") + ")" + "else" + restOfLine + "println(" + string("message") + ")" + "end")
-for_loop = Group(keyword("for") + identifier("currency") + keyword("in") + identifier("currencies") + restOfLine + "println(" + string("message") + ")" + "end")
-assignment = Group(identifier("var") + equals + (string | number | identifier))
-function_call = Group(identifier("func") + "(" + Optional(identifier("args")) + ")" + equals + identifier("var"))
+# # Gramática completa
+# expression = (import_statement | configure_statement | print_statement | user_input_statement | if_statement | for_loop | assignment | function_call)
 
-# Gramática completa
-expression = (import_statement | configure_statement | print_statement | user_input_statement | if_statement | for_loop | assignment | function_call)
 
-# Parsear el código
-results = expression.searchString(sample_code)
-
-# Mostrar resultados
-
-for result in results:
-    print(result)
-    print("\n")
