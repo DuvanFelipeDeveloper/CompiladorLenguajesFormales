@@ -18,17 +18,18 @@ patrondiccionariovar = r'^\s*(\w+)\s*=\s*(\w+)\s*\*\s*(\w+)\[(\w+)\]\[(\w+)\]'
 def evaluate_ruby_line(line):
     match_declaration = re.match(variable_declaration_pattern, line)
     vardiccionario = re.match(patrondiccionariovar, line)
-    print("linea   ",line)
+
     if(vardiccionario):
+        print("esntra bien")
         newvar = vardiccionario.group(1)
         amount = vardiccionario.group(2)
         varglobal = vardiccionario.group(3)
         elemnt1 = vardiccionario.group(4)
         elemen2 = vardiccionario.group(5)
-      
+
         if newvar not in variables:
             try:
-                variables[newvar] = variables.get(amount) * variables[varglobal][elemnt1][elemen2] 
+                variables[newvar] = int(variables[amount]) * variables[varglobal][variables[elemnt1].replace("'", "").replace('"', '')][variables[elemen2]]
 
                 print("codigo ", variables[newvar])
             except Exception as e:
@@ -129,19 +130,24 @@ def compilar(code):
 
                     if coincidencias :
 
-                        print (line)
+                        
                         var1 = coincidencias.group(1).strip()
                         elemen1 = coincidencias.group(2).strip()
                         operator = coincidencias.group(3).strip()
                         var2 = coincidencias.group(4).strip()
                         elemen2 = coincidencias.group(5).strip()
 
+             
                         if var1 in variables:
                             var1=variables[var1]
+                         
                         if var2 in variables:
                             var2 = variables[var2]
+                           
 
-                        result1= elemen1 in var1 and elemen2 in var2
+                  
+                        result1= variables[elemen1].replace("'", "").replace('"', '') in var1 and variables[elemen2].replace("'", "").replace('"', '') in var2
+                        print("resultado", result1)
                         ifvalid = result1
                         
                     else:
