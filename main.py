@@ -22,6 +22,11 @@ def analizador(code):
     else:
         expressionAnalysis ="no compatible"
     
+
+    
+
+
+
     error=ae.verificar_equilibrio_ruby(code)
 
     if(not error):

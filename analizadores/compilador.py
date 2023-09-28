@@ -49,6 +49,7 @@ def evaluate_ruby_line(line):
                             return str(mensaje), 0
                     variables[variable_name] = variable_value
             else:
+
                 mensaje = f"Error: variable al definir variable '{variable_name}' = '{variable_value}'"
                 return str(mensaje), 0
     else:
@@ -74,7 +75,7 @@ def evaluate_ruby_line(line):
 
 
                     else:
-                        if not "def" in line:
+                        if not ("def" in line) :
                             mensaje= f"Error: Variable '{variable_name}' no definida"
                             return str(mensaje), 0
 
@@ -87,8 +88,9 @@ def evaluate_ruby_line(line):
             result = eval(output_line)
             return str(result), 1
         except Exception as e:
-            mensaje= f"Error al evaluar la expresión '{output_line}': {str(e)}"
-            return str(mensaje), 0
+            if not ("converted" in line):
+                mensaje= f"Error al evaluar la expresión '{output_line}': {str(e)}"
+                return str(mensaje), 0
     return "",3
 
 
@@ -123,7 +125,7 @@ def compilar(code):
             if match and not validacion:
                 name =match.group(1)
                 if name not in variables:
-                    variables[name] = 0
+                    variables[name] = diccionario(code)
             else:
                 return validacion
         else:

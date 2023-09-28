@@ -1,11 +1,10 @@
 import re
-#errores 
+
 def verificar_equilibrio_ruby(codigo):
     stack = []
     lineas = codigo.split("\n")
 
     for numero_linea, linea in enumerate(lineas, start=1):
-        # Buscar patrones de inicio y finalización de estructuras de control
         inicio = re.search(r'\b(if |unless|while|until|for|case|class|def)\b', linea)
         final = re.search(r'\bend\b', linea)
 
@@ -18,6 +17,20 @@ def verificar_equilibrio_ruby(codigo):
             else:
                 stack.pop()
 
+        if("if" in linea):
+            if "key" in linea:
+                pattern = r'if\s+\w+\s*\.key\?\(\w+\)\s*(?:&&\s*\w+\s*\.key\?\(\w+\))?\s*$'
+                if re.match(pattern, linea):
+                    print("La cadena es válida.")
+                else:
+                    pattern2 = r'^\s*if\s+\w+\s*\[\w+\]\.key\?\(\w+\)\s*$'
+                    if re.match(pattern2, linea):
+                        print("La cadena es válida.")
+                    else:
+                        return f"Error en el if en la línea {numero_linea}"
+                    
+                    
+                
     # Verificar si hay 'end' sin pareja
     for numero_linea,estructura  in stack:
         print(f"falta un end para '{estructura}' en el código linea '{numero_linea}'")

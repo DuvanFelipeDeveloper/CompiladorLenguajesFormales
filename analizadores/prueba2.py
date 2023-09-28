@@ -1,16 +1,13 @@
 import re
 
-# Texto de ejemplo
-texto = "cualquiercadena.each do |numero|"
+# Expresión regular
+pattern = r'if\s+\w+\s*\[\w+\]\.key\?\(\w+\)\s*$'
 
-# Expresión regular para extraer el texto entre '|'
-regex = r".*?\.each do \|([^|]+)\|"
+# Cadena de ejemplo
+cadena = "if exchange_rates[from_currency].key?(to_currency)"
 
-# Busca la coincidencia en el texto
-match = re.search(regex, texto)
-
-if match:
-    resultado = match.group(1)
-    print("Texto extraído:", resultado)
+# Comprobar si la cadena coincide con la expresión regular
+if re.match(pattern, cadena):
+    print("La cadena es válida.")
 else:
-    print("No se encontró ninguna coincidencia.")
+    print("La cadena no es válida.")
