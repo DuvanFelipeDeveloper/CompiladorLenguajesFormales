@@ -1,5 +1,5 @@
 import re
-
+#errores 
 def verificar_equilibrio_ruby(codigo):
     stack = []
     lineas = codigo.split("\n")
