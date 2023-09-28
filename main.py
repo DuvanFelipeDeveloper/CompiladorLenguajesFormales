@@ -1,8 +1,12 @@
 import analizadores.analizador_lexico as al
 import analizadores.analizador_paradigma as ap
 import analizadores.analizador_sintactico as asi
-import analizadores.analizador_error as ae
-import analizadores.compilador  as compilador
+import analizadores.ruby.analizador_error as aeRuby
+import analizadores.ruby.compilador  as compiladorRuby
+import analizadores.perl.analizador_error as aePerl
+import analizadores.perl.compilador  as compiladorPerl
+import analizadores.julia.analizador_error as aeJulia
+import analizadores.julia.compilador  as compiladorJulia
 from collections import Counter
 
 def analizador(code):
@@ -22,18 +26,33 @@ def analizador(code):
     else:
         expressionAnalysis ="no compatible"
     
-
     
+    if(lenguaje == "ruby"):
+        error=aeRuby.verificar_equilibrio_ruby(code)
 
-
-
-    error=ae.verificar_equilibrio_ruby(code)
-
-    if(not error):
-        error =ae.validar_estructuras_ruby(code)
         if(not error):
-            error = ""
-    output = compilador.compilar(code)
+            error =aeRuby.validar_estructuras_ruby(code)
+            if(not error):
+                error = ""
+        output = compiladorRuby.compilar(code)
+    
+    elif(lenguaje == "julia"):
+        error=aeJulia.verificar_equilibrio_ruby(code)
+
+        if(not error):
+            error =aeJulia.validar_estructuras_ruby(code)
+            if(not error):
+                error = ""
+        output = compiladorJulia.compilar(code)
+    
+    elif(lenguaje == "perl"):
+        error=aePerl.verificar_equilibrio_ruby(code)
+
+        if(not error):
+            error =aePerl.validar_estructuras_ruby(code)
+            if(not error):
+                error = ""
+        output = compiladorPerl.compilar(code)
     
 
 

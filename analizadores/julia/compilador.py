@@ -15,15 +15,32 @@ patron_bloque = r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+,\s*)"
 patron_bloque_penultimo= r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+\s*)"
 patron_fin_bloque = r"\s*\}"
 patron_inicio_bloque_personalizado = r"\s*'?\w+'?\s*=>\s*{"
-
-
-
 patrondiccionariovar = r'^\s*(\w+)\s*=\s*(\w+)\s*\*\s*(\w+)\[(\w+)\]\[(\w+)\]'
 
 def evaluate_ruby_line(line):
     match_declaration = re.match(variable_declaration_pattern, line)
-    
-    if match_declaration:
+    vardiccionario = re.match(patrondiccionariovar, line)
+
+
+    if(vardiccionario):
+        print("esntra bien")
+        newvar = vardiccionario.group(1)
+        amount = vardiccionario.group(2)
+        varglobal = vardiccionario.group(3)
+        elemnt1 = vardiccionario.group(4)
+        elemen2 = vardiccionario.group(5)
+
+        if newvar not in variables:
+                try:
+
+                    variables[newvar] = int(variables[amount]) * variables[varglobal][variables[elemnt1].replace("'", "").replace('"', '')][variables[elemen2]]
+
+                    print("codigo ", variables[newvar])
+                except Exception as e:
+                    mensaje= f"Error crear la variable '{newvar}': {str(e)}"
+                    return str(mensaje), 0
+
+    elif match_declaration:
         variable_name = match_declaration.group(1)
         variable_value = match_declaration.group(2)
 
