@@ -55,7 +55,7 @@ def evaluate_ruby_line(line):
         match_usage = re.findall(variable_usage_pattern, line)
         for variable_name in match_usage:
             if variable_name not in variables:
-                keywords = {"puts", "if", "key", "else", "end", "true", "false", "elsif","each","do","even","def","convert_currency","to_currency"}
+                keywords = {"puts", "if", "key", "else", "end", "true", "false", "elsif","each","do","even","for"}
                 if variable_name not in keywords:
                     if re.match(patron, line):
                         return str(variable_name),1
@@ -74,8 +74,9 @@ def evaluate_ruby_line(line):
 
 
                     else:
-                        mensaje= f"Error: Variable '{variable_name}' no definida"
-                        return str(mensaje), 0
+                        if not "def" in line:
+                            mensaje= f"Error: Variable '{variable_name}' no definida"
+                            return str(mensaje), 0
 
     if "puts" in line:
         
@@ -109,7 +110,6 @@ def compilar(code):
             end_line = code.count('\n', 0, match.end()) +1 if code.count('\n', 0, match.end()) > start_line else start_line
 
     lines = code.split('\n')
-    output = []
     for index,line in enumerate(lines):
         
         if index >= start_line and index <= end_line:
@@ -123,10 +123,9 @@ def compilar(code):
             if match and not validacion:
                 name =match.group(1)
                 if name not in variables:
-                    variables[name] = diccionario(resultado)
+                    variables[name] = 0
             else:
-                output.append(validacion)
-                return output
+                return validacion
         else:
 
             evaluate, status = evaluate_ruby_line(line)
@@ -209,11 +208,13 @@ def procesar_bloques(hash_str):
     for i, parte in enumerate(partes_no_coincidentes):
         es_linea_valida = verificar_errores_linea_por_linea(parte, i + len(bloques) + 1)
         if es_linea_valida is None:
-            print(f"No se encontraron errores en la línea {i + len(bloques) + 1}.")
+            x=1
         elif es_linea_valida:
-            return print(f"Errores encontrados en la línea {i + len(bloques) + 1}: {es_linea_valida}")
+            message =  f"Errores encontrados en la línea {i + len(bloques) + 1}: {es_linea_valida}"
+            return message
         else:
-            return print(f"No se encontraron errores en la línea {i + len(bloques) + 1}.")
+            message = f"No se encontraron errores en la línea {i + len(bloques) + 1}."
+            return message
 
     return None
  

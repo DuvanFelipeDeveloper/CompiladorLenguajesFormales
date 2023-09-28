@@ -3,14 +3,14 @@ from tkinter import scrolledtext
 import requests 
 
 def consumir_api():
-    print("aca algo hace")
+
     url = "http://127.0.0.1:5000/api/compilador"  
     texto_a_enviar = input_text.get("1.0", "end-1c")
-    print("aca algo hace 2")
+
     try:
-        print("aca algo hace 3")
+
         response = requests.post(url, json={"texto": texto_a_enviar})
-        print("aca algo hace 4")
+
         if response.status_code == 200:
             analysis = response.json()
             response_text.delete("1.0", "end")
