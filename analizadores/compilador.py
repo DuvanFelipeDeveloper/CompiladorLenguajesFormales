@@ -1,4 +1,5 @@
 import re
+import subprocess
 
 # Diccionario para almacenar las variables y sus valores
 variables = {}
@@ -14,51 +15,66 @@ patron_bloque_penultimo= r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+\s*)"
 patron_fin_bloque = r"\s*\}"
 
 patrondiccionariovar = r'^\s*(\w+)\s*=\s*(\w+)\s*\*\s*(\w+)\[(\w+)\]\[(\w+)\]'
-# Función para evaluar una línea de código Ruby
+
 def evaluate_ruby_line(line):
     match_declaration = re.match(variable_declaration_pattern, line)
-    vardiccionario = re.match(patrondiccionariovar, line)
-
-    if(vardiccionario):
-        print("esntra bien")
-        newvar = vardiccionario.group(1)
-        amount = vardiccionario.group(2)
-        varglobal = vardiccionario.group(3)
-        elemnt1 = vardiccionario.group(4)
-        elemen2 = vardiccionario.group(5)
-
-        if newvar not in variables:
-            try:
-                variables[newvar] = int(variables[amount]) * variables[varglobal][variables[elemnt1].replace("'", "").replace('"', '')][variables[elemen2]]
-
-                print("codigo ", variables[newvar])
-            except Exception as e:
-                mensaje= f"Error al evaluar la expresión '{line}': {str(e)}"
-                return str(mensaje), 0
-        else:
-            mensaje= f"La variable ya esta definida '{newvar}'"
-            return str(mensaje), 0
-            
-
-    elif match_declaration:
+    
+    if match_declaration:
         variable_name = match_declaration.group(1)
         variable_value = match_declaration.group(2)
-        variables[variable_name] = variable_value
+
+        if variable_value.replace(".", "", 1).isdigit():
+            variables[variable_name] = variable_value
+        else:
+            if (variable_value.startswith('"') and variable_value.endswith('"')) or \
+            (variable_value.startswith("'") and variable_value.endswith("'")):
+                variables[variable_name] = variable_value
+            elif re.match(r'^\[[^\[\]]*\]$', variable_value):
+                patronArray = r'(\d+|"[^"]+"|\w+)'
+                coincidenciasArray = re.findall(patronArray, line)
+                if coincidenciasArray:
+                    coincidenciasArray.pop(0)
+                    for coincidencia in coincidenciasArray:
+         
+                        if coincidencia.isdigit():
+                            print(f'{coincidencia} es un número')
+                        elif re.match(r'"[^"]+"', coincidencia):
+                            print(f'{coincidencia} es una cadena entre comillas')
+                        else:
+                            mensaje = f"Error: variable al definir variable '{variable_name}' = '{variable_value}'"
+                            return str(mensaje), 0
+                    variables[variable_name] = variable_value
+            else:
+                mensaje = f"Error: variable al definir variable '{variable_name}' = '{variable_value}'"
+                return str(mensaje), 0
     else:
         match_usage = re.findall(variable_usage_pattern, line)
         for variable_name in match_usage:
             if variable_name not in variables:
-                if not (variable_name == "puts") :
+                keywords = {"puts", "if", "key", "else", "end", "true", "false", "elsif","each","do","even","def","convert_currency","to_currency"}
+                if variable_name not in keywords:
                     if re.match(patron, line):
                         return str(variable_name),1
+                    elif ".each do" in line:
+
+                        print(line)
+                        patronEach = r".*?\.each do \|([^|]+)\|"
+                        coincidenciaEach = re.search(patronEach, line)
+                        print("llega aca")
+                        if coincidenciaEach:
+                            print(coincidenciaEach)
+                            texto_extraido = coincidenciaEach.group(1).strip()
+                            variables[texto_extraido]=0
+                        else:
+                            mensaje= f"Error: for each mal definico"
+
+
                     else:
                         mensaje= f"Error: Variable '{variable_name}' no definida"
                         return str(mensaje), 0
-    
+
     if "puts" in line:
         
-
-
         output_line = line.replace("puts", "").strip()
         for variable_name, variable_value in variables.items():
             output_line = output_line.replace(variable_name, str(variable_value))
@@ -68,7 +84,6 @@ def evaluate_ruby_line(line):
         except Exception as e:
             mensaje= f"Error al evaluar la expresión '{output_line}': {str(e)}"
             return str(mensaje), 0
-        
     return "",3
 
 
@@ -76,12 +91,9 @@ def evaluate_ruby_line(line):
 def compilar(code):
     global variables 
     variables = {} 
-
     pattern =  r"'(\w+)'\s*=>\s*{([^}]+)}"
     patron_condicion = r'\b(if|elsif)\s+(.+)\s*$'
     patronifdiccionario =  r'if\s+(.*?)\.key\?\((.*?)\)\s+(.*?)\s+(.*?)\.key\?\((.*?)\)'
- 
-
     matches = list(re.finditer(pattern, code, re.DOTALL))
     start_line =99999
     end_line=0
@@ -92,13 +104,8 @@ def compilar(code):
             start_line = code.count('\n', 0, match.start()) -1 if code.count('\n', 0, match.start()) < start_line else start_line
             end_line = code.count('\n', 0, match.end()) +1 if code.count('\n', 0, match.end()) > start_line else start_line
 
-
-
-
     lines = code.split('\n')
     output = []
-    enif = False
-    ifvalid=False
     for index,line in enumerate(lines):
         
         if index >= start_line and index <= end_line:
@@ -117,105 +124,26 @@ def compilar(code):
                 output.append(validacion)
                 return output
         else:
-        
-            if "if" in line:
-                match = re.search(patron_condicion, line)
-                
-                if match:
-                    
-                    enif=True
-                    tipo = match.group(1)
-                    condicion = match.group(2)
-                    coincidencias = re.search(patronifdiccionario, line)
 
-                    if coincidencias :
+            evaluate, status = evaluate_ruby_line(line)
+            if status == 0:
+                return evaluate            
+    output1 = compilarruby(code)
+    return output1
 
-                        
-                        var1 = coincidencias.group(1).strip()
-                        elemen1 = coincidencias.group(2).strip()
-                        operator = coincidencias.group(3).strip()
-                        var2 = coincidencias.group(4).strip()
-                        elemen2 = coincidencias.group(5).strip()
 
-             
-                        if var1 in variables:
-                            var1=variables[var1]
-                         
-                        if var2 in variables:
-                            var2 = variables[var2]
-                           
 
-                  
-                        result1= variables[elemen1].replace("'", "").replace('"', '') in var1 and variables[elemen2].replace("'", "").replace('"', '') in var2
-                        print("resultado", result1)
-                        ifvalid = result1
-                        
-                    else:
-                        patron_operadores = r'(\S+)\s*([<>=]+)\s*(\S+)'
-                        match_operadores = re.search(patron_operadores, condicion)
-                
-                        if match_operadores:
-                            valor_uno = match_operadores.group(1)
-                            operador = match_operadores.group(2)
-                            valor_dos = match_operadores.group(3)
-                        
-                            if valor_uno in variables:
-                                valor_uno=variables[valor_uno]
-                            if valor_dos in variables:
-                                valor_dos in variables[valor_dos]
 
-                            try:
-                                valor_uno = float(valor_uno)
-                            except ValueError:
-                                pass  
 
-                            try:
-                                valor_dos = float(valor_dos)
-                            except ValueError:
-                                pass
-                            
-                            if operador == ">":
-                                resultado = valor_uno > valor_dos
-                            elif operador == ">=":
-                                resultado = valor_uno >= valor_dos
-                            elif operador == "<":
-                                resultado = valor_uno <  valor_dos  
-                            elif operador == "<=":
-                                resultado = valor_uno <= valor_dos
-                            elif operador == "==":
-                                resultado = valor_uno == valor_dos
-                            elif operador == "!=":
-                                resultado = valor_uno != valor_dos
-                            else:
-                                print("Operador no válido")
-                            
-                            
-                            if resultado:
-                                ifvalid = True
-                            else:
-                                ifvalid = False
-         
-            else:
+def compilarruby(code):
+    resultado = subprocess.run(["ruby"], input=code, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    print("Errores:")
+    print(resultado.stderr)
 
-                if((not enif or ifvalid) and not ("end" in line) and not ("else" in line)):
-        
-                    evaluate, status = evaluate_ruby_line(line)
-                    if status == 1:
-                        output.append(evaluate)
-                    elif status == 0 :
-                        return evaluate
-                elif("else" in line and not ifvalid):
-                    print("entra")
-                    ifvalid=True
-                    enif=True
-                elif("end" in line):
-                    ifvalid=False
-                    enif=False
-                
-                
+    print("Salida:")
+    return resultado.stdout
 
-    return output
-
+    
 
 
 def diccionario(code):

@@ -20,9 +20,7 @@ def consumir_api():
             response_text.insert("1.0","Paradigma " + analysis["paradigma"] +  "\n")
             response_text.insert("1.0","Lenguaje " + analysis["lenguaje"] +  "\n")
             response_text.insert("1.0","error " + analysis["error"] +  "\n")
-
-            for output in analysis["output"]:
-                response_text.insert("1.0","salida " + output+  "\n")
+            response_text.insert("1.0","salida " + analysis["output"]+  "\n")
         else:
             response_text.delete("1.0", "end")
             response_text.insert("1.0", "Error: No se pudo obtener datos de la API")

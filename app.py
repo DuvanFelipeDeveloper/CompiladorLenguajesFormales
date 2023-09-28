@@ -11,7 +11,7 @@ def compilador():
         if 'texto' in data:
             texto_entrada = data['texto']
             lenguaje, paradigma, expressionAnalysis,error, output= main.analizador(texto_entrada)
-            print(output)
+         
             return jsonify({'lenguaje':lenguaje ,'paradigma' : paradigma, 'ExpresionesRegulares' : expressionAnalysis ,'error' : error ,"output" :output})
         else:
             return jsonify({'error': 'El campo "texto" es requerido'}), 400
