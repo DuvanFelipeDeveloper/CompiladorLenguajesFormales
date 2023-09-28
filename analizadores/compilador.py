@@ -13,6 +13,7 @@ patron_inicio_bloque = r"'[\w\s]+' => \{\s*"
 patron_bloque = r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+,\s*)"
 patron_bloque_penultimo= r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+\s*)"
 patron_fin_bloque = r"\s*\}"
+patron_inicio_bloque_personalizado = r"\s*'?\w+'?\s*=>\s*{"
 
 
 
@@ -248,7 +249,6 @@ def verificar_errores_linea_por_linea(bloque, numero_bloque):
     lineas = bloque.strip().split('\n')
     total_lineas = len(lineas)  
     
-   
     for i, linea in enumerate(lineas, start=1):
         if i == 1:
             continue
@@ -258,28 +258,34 @@ def verificar_errores_linea_por_linea(bloque, numero_bloque):
         elif i == total_lineas - 1: 
             bloque_match = re.match(patron_bloque_penultimo, linea.strip())
             if not bloque_match:
-                return f"En el bloque {numero_bloque}, línea {i}: Coma al final ."
+                return f"En el bloque {numero_bloque}, línea {i}: Estructura incorrecta en la línea."
         else:
             bloque_match = re.match(patron_bloque, linea.strip())
             if not bloque_match:
-                return f"En el bloque {numero_bloque}, línea {i}: Bloque."
-            else:
-                bloque = bloque_match.group(0)
-                
-
+                return f"En el bloque {numero_bloque}, línea {i}: Estructura incorrecta en la línea."
+    
     return None 
 
-
-
 def procesar_bloques(hash_str):
-    print(hash_str)
     bloques = re.findall(patron_bloque_datos, hash_str)
 
     for i, bloque in enumerate(bloques, start=1):
         errores_bloque = verificar_errores_linea_por_linea(bloque, i)
         if errores_bloque:
             return errores_bloque
+    
+    partes_no_coincidentes = re.split(patron_bloque_datos, hash_str)
+
+    # Analizar las partes que no coinciden con bloques
+    
+    for i, parte in enumerate(partes_no_coincidentes):
+        es_linea_valida = verificar_errores_linea_por_linea(parte, i + len(bloques) + 1)
+        if es_linea_valida is None:
+            print(f"No se encontraron errores en la línea {i + len(bloques) + 1}.")
+        elif es_linea_valida:
+            return print(f"Errores encontrados en la línea {i + len(bloques) + 1}: {es_linea_valida}")
+        else:
+            return print(f"No se encontraron errores en la línea {i + len(bloques) + 1}.")
 
     return None
-
  
