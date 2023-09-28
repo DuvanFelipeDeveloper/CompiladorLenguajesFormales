@@ -258,11 +258,11 @@ def verificar_errores_linea_por_linea(bloque, numero_bloque):
         elif i == total_lineas - 1: 
             bloque_match = re.match(patron_bloque_penultimo, linea.strip())
             if not bloque_match:
-                return f"En el bloque {numero_bloque}, línea {i}: Estructura incorrecta en la línea."
+                return f"En el bloque {numero_bloque}, línea {i}: Coma al final ."
         else:
             bloque_match = re.match(patron_bloque, linea.strip())
             if not bloque_match:
-                return f"En el bloque {numero_bloque}, línea {i}: Estructura incorrecta en la línea."
+                return f"En el bloque {numero_bloque}, línea {i}: Bloque."
             else:
                 bloque = bloque_match.group(0)
                 
@@ -272,6 +272,7 @@ def verificar_errores_linea_por_linea(bloque, numero_bloque):
 
 
 def procesar_bloques(hash_str):
+    print(hash_str)
     bloques = re.findall(patron_bloque_datos, hash_str)
 
     for i, bloque in enumerate(bloques, start=1):
