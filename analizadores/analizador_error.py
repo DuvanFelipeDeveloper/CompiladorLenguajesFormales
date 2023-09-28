@@ -1,16 +1,16 @@
 import re
-#errores 
+
+# Función para verificar el equilibrio de las estructuras de control en Ruby
 def verificar_equilibrio_ruby(codigo):
-    stack = []
+    stack = []  # Utilizamos una pila para rastrear las estructuras de control abiertas
     lineas = codigo.split("\n")
 
     for numero_linea, linea in enumerate(lineas, start=1):
-        # Buscar patrones de inicio y finalización de estructuras de control
-        inicio = re.search(r'\b(if |unless|while|until|for|case|class|def)\b', linea)
+        inicio = re.search(r'\b(if|unless|while|until|for|case|class|def)\b', linea)
         final = re.search(r'\bend\b', linea)
 
         if inicio:
-            stack.append({inicio.group(), numero_linea})
+            stack.append((inicio.group(), numero_linea))
         if final:
             if not stack:
                 print(f"Falta un 'end' en la línea {numero_linea}")
@@ -19,25 +19,20 @@ def verificar_equilibrio_ruby(codigo):
                 stack.pop()
 
     # Verificar si hay 'end' sin pareja
-    for numero_linea,estructura  in stack:
-        print(f"falta un end para '{estructura}' en el código linea '{numero_linea}'")
-        return f"falta un end para '{estructura}' en el código linea '{numero_linea}'"
-    resultado =validar_diccionario_ruby(codigo)
-
+    for estructura, numero_linea in stack:
+        print(f"Falta un 'end' para '{estructura}' en la línea {numero_linea}")
+        return f"Falta un 'end' para '{estructura}' en la línea {numero_linea}"
+    
+    resultado = validar_diccionario_ruby(codigo)
     if resultado:
         return str(resultado)
-   
-      
 
+# Función para validar estructuras de control específicas en Ruby
 def validar_estructuras_ruby(codigo_ruby):
     lineas = codigo_ruby.split('\n')
     variables_definidas = set()
     patrones = {
-        r'^\s*if\s*(\([^)]+\))?([^:]+)$': "if",
-        r'^\s*while\s*(\([^)]+\))?([^:]+)$': "while",
-        r'^\s*elsif\s*(\([^)]+\))?([^:]+)$': "elsif",
-        r'^\s*unless\s*(\([^)]+\))?([^:]+)$': "unless", 
-        r'^\s*until\s*(\([^)]+\))?([^:]+)$': "until"
+        r'^\s*(if|while|elsif|unless|until)\s*(\([^)]+\))?([^:]+)$': "if/while/unless/until",
     }
 
     for numero_linea, linea in enumerate(lineas, start=1):
@@ -45,7 +40,7 @@ def validar_estructuras_ruby(codigo_ruby):
             if re.search(r'\b' + estructura + r'\b', linea) and not re.search(r'(["\']).*?\1', linea):
                 match = re.match(patron, linea)
                 if match:
-                    condicion = match.group(2).strip()
+                    condicion = match.group(3).strip()
                     for token in re.findall(r'\w+|\d+|\S', condicion):
                         if token.isalpha() and token not in variables_definidas and token != "then":
                             if not (token == "key"):
@@ -55,15 +50,13 @@ def validar_estructuras_ruby(codigo_ruby):
                     print(f"Error en la línea {numero_linea}: La línea '{linea.strip()}' no tiene la sintaxis correcta de un '{estructura}'.")
                     return f"Error en la línea {numero_linea}: La línea '{linea.strip()}' no tiene la sintaxis correcta de un '{estructura}'."
 
-        # Buscar variables definidas en líneas anteriores
         for variable in re.findall(r'\w+', linea):
             variables_definidas.add(variable)
 
-
-
+# Función para validar la estructura de bucles 'for' en Ruby
 def validar_for_ruby(codigo_ruby):
     lineas = codigo_ruby.split('\n')
-    patron_for = r'^\s*for\s+([a-zA-Z_]\w*)\s+in\s+([a-zA-Z_]\w*|\d+\.\.\d+)\s*$'  # Expresión regular para buscar "for variable in variable_o_rango"
+    patron_for = r'^\s*for\s+([a-zA-Z_]\w*)\s+in\s+([a-zA-Z_]\w*|\d+\.\.\d+)\s*$'
 
     for numero_linea, linea in enumerate(lineas, start=1):
         if re.search(r'\bfor\b', linea) and not re.search(r'(["\']).*?\1', linea):
@@ -82,51 +75,29 @@ def validar_for_ruby(codigo_ruby):
                 print(f"Error en la línea {numero_linea}: La línea '{linea.strip()}' no tiene la sintaxis correcta de un 'for'.")
 
 
+# Función para validar la estructura de diccionarios en Ruby
 def validar_diccionario_ruby(texto):
- 
     patron_corchetes = re.compile(r'[{}]')
-    
-    # Pila para rastrear los corchetes abiertos
-    pila_corchetes = []
-    
-    # Variable para rastrear si estamos dentro de un diccionario
-    dentro_diccionario = False
-    
-    # Divide el texto en líneas y realiza un seguimiento del número de línea actual
+    pila_corchetes = []  # Pila para rastrear los corchetes abiertos
+    dentro_diccionario = False  # Variable para rastrear si estamos dentro de un diccionario
     lineas = texto.split('\n')
     numero_linea = 0
-    
-    nlinea=0
+
     for linea in lineas:
         numero_linea += 1
-        # Verifica si la línea contiene corchetes
         if re.search(patron_corchetes, linea):
             for caracter in linea:
                 if caracter == '{':
                     pila_corchetes.append('{')
-                    # Si encontramos una '{', verificamos si estamos dentro de un diccionario
                     if not dentro_diccionario and re.search(r'\w+\s*=\s*\{', linea):
                         dentro_diccionario = True
-                    else:
-                        nlinea= numero_linea
                 elif caracter == '}':
                     if not pila_corchetes:
                         return f"Error: Corchete de cierre sin coincidencia en la línea {numero_linea}"
                     pila_corchetes.pop()
     
-    # Si quedan corchetes sin cerrar en la pila, hay un error
     if pila_corchetes:
         return "Error: Corchete de apertura sin coincidencia"
     
-    # Si no se encontraron errores de corchetes y estamos dentro de un diccionario, no hay problemas de sintaxis
     if not dentro_diccionario:
-        return f"Error: No se encontraron estructuras en la linea {nlinea}"
- 
-        
-
-
-
-
-
-
-
+        return f"Error: No se encontraron estructuras de diccionario en ninguna línea."
