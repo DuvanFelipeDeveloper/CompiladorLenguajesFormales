@@ -258,11 +258,11 @@ def verificar_errores_linea_por_linea(bloque, numero_bloque):
         elif i == total_lineas - 1: 
             bloque_match = re.match(patron_bloque_penultimo, linea.strip())
             if not bloque_match:
-                return f"En el bloque {numero_bloque}, línea {i}: Estructura incorrecta en la línea."
+                return f"En el bloque {numero_bloque}, línea {i}: Estructura con ,"
         else:
             bloque_match = re.match(patron_bloque, linea.strip())
             if not bloque_match:
-                return f"En el bloque {numero_bloque}, línea {i}: Estructura incorrecta en la línea."
+                return f"En el bloque {numero_bloque}, línea {i}: Estructura incompleta."
     
     return None 
 
