@@ -7,11 +7,14 @@ variables = {}
 variable_declaration_pattern = r'^\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)$'
 variable_usage_pattern = r'\b([a-zA-Z_][a-zA-Z0-9_]*)\b'
 patron = r'^\s*puts\s+"[^"]*"'
+
 patron_bloque_datos = r"'\w+' => \{[^}]*\}"
 patron_inicio_bloque = r"'[\w\s]+' => \{\s*"
 patron_bloque = r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+,\s*)"
 patron_bloque_penultimo= r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+\s*)"
 patron_fin_bloque = r"\s*\}"
+
+
 
 patrondiccionariovar = r'^\s*(\w+)\s*=\s*(\w+)\s*\*\s*(\w+)\[(\w+)\]\[(\w+)\]'
 # Función para evaluar una línea de código Ruby
@@ -245,13 +248,7 @@ def verificar_errores_linea_por_linea(bloque, numero_bloque):
     lineas = bloque.strip().split('\n')
     total_lineas = len(lineas)  
     
-    inicio_bloque_match = re.match(patron_inicio_bloque, lineas[0].strip())
-    if inicio_bloque_match:
-        inicio_bloque = inicio_bloque_match.group(0)
-    else:
-        return f"En el bloque {numero_bloque}, línea 1: El bloque debe comenzar con una clave seguida de ' => {{'"
- 
-
+   
     for i, linea in enumerate(lineas, start=1):
         if i == 1:
             continue
