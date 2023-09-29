@@ -23,7 +23,6 @@ def evaluate_ruby_line(line):
 
 
     if(vardiccionario):
-        print("esntra bien")
         newvar = vardiccionario.group(1)
         amount = vardiccionario.group(2)
         varglobal = vardiccionario.group(3)

@@ -133,7 +133,7 @@ def validar_diccionario_ruby(texto):
     
     # Si no se encontraron errores de corchetes y estamos dentro de un diccionario, no hay problemas de sintaxis
     if not dentro_diccionario:
-        return f"Error: No se encontraron estructuras en la linea {nlinea}"
+        return f"No se encontro un diccionario para la conversion"
  
         
 
