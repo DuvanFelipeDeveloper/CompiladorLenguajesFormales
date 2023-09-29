@@ -7,23 +7,22 @@ variables = {}
 # Expresiones regulares para detectar declaraciones de variables y usos de variables
 variable_declaration_pattern = r'^\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)$'
 variable_usage_pattern = r'\b([a-zA-Z_][a-zA-Z0-9_]*)\b'
-patron = r'^\s*puts\s+"[^"]*"'
+patron = r'^\s*println\s*\(.+\)$'
 
-patron_bloque_datos = r"'\w+' => \{[^}]*\}"
-patron_inicio_bloque = r"'[\w\s]+' => \{\s*"
-patron_bloque = r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+,\s*)"
-patron_bloque_penultimo= r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+\s*)"
-patron_fin_bloque = r"\s*\}"
-patron_inicio_bloque_personalizado = r"\s*'?\w+'?\s*=>\s*{"
+patron_bloque_datos = r'"[A-Z]+" => Dict\([^)]*\)'
+patron_inicio_bloque = r'"[A-Z]+" => Dict\(\s*'
+patron_bloque = r'\s*"[A-Z]+" => (?:Dict\([^)]*\)|\d+\.\d+,\s*)'
+patron_bloque_penultimo = r'\s*"[A-Z]+" => (?:Dict\([^)]*\)|\d+\.\d+\s*)'
+patron_fin_bloque = r'\s*\)'
+patron_inicio_bloque_personalizado = r'\s*"?[A-Z]+"?\s*=>\s*Dict\('
+
 patrondiccionariovar = r'^\s*(\w+)\s*=\s*(\w+)\s*\*\s*(\w+)\[(\w+)\]\[(\w+)\]'
 
-def evaluate_ruby_line(line):
+def evaluate_julia_line(line):
     match_declaration = re.match(variable_declaration_pattern, line)
     vardiccionario = re.match(patrondiccionariovar, line)
 
-
-    if(vardiccionario):
-        print("esntra bien")
+    if vardiccionario:
         newvar = vardiccionario.group(1)
         amount = vardiccionario.group(2)
         varglobal = vardiccionario.group(3)
@@ -31,14 +30,12 @@ def evaluate_ruby_line(line):
         elemen2 = vardiccionario.group(5)
 
         if newvar not in variables:
-                try:
-
-                    variables[newvar] = int(variables[amount]) * variables[varglobal][variables[elemnt1].replace("'", "").replace('"', '')][variables[elemen2]]
-
-                    print("codigo ", variables[newvar])
-                except Exception as e:
-                    mensaje= f"Error crear la variable '{newvar}': {str(e)}"
-                    return str(mensaje), 0
+            try:
+                variables[newvar] = int(variables[amount]) * variables[varglobal][variables[elemnt1].replace("'", "").replace('"', '')][variables[elemen2]]
+                print("Resultado de", newvar, ":", variables[newvar])
+            except Exception as e:
+                mensaje = f"Error al crear la variable '{newvar}': {str(e)}"
+                return str(mensaje), 0
 
     elif match_declaration:
         variable_name = match_declaration.group(1)
@@ -56,49 +53,44 @@ def evaluate_ruby_line(line):
                 if coincidenciasArray:
                     coincidenciasArray.pop(0)
                     for coincidencia in coincidenciasArray:
-         
                         if coincidencia.isdigit():
                             print(f'{coincidencia} es un número')
                         elif re.match(r'"[^"]+"', coincidencia):
                             print(f'{coincidencia} es una cadena entre comillas')
                         else:
-                            mensaje = f"Error: variable al definir variable '{variable_name}' = '{variable_value}'"
+                            mensaje = f"Error al definr la variable '{variable_name}' = '{variable_value}'"
                             return str(mensaje), 0
                     variables[variable_name] = variable_value
             else:
-
-                mensaje = f"Error: variable al definir variable '{variable_name}' = '{variable_value}'"
+                mensaje = f"Error al definir la variable '{variable_name}' = '{variable_value}'"
                 return str(mensaje), 0
     else:
         match_usage = re.findall(variable_usage_pattern, line)
         for variable_name in match_usage:
             if variable_name not in variables:
-                keywords = {"puts", "if", "key", "else", "end", "true", "false", "elsif","each","do","even","for"}
+                keywords = {"println", "if", "haskey", "else", "end", "true", "false", "elseif", "for"}
                 if variable_name not in keywords:
                     if re.match(patron, line):
-                        return str(variable_name),1
+                        return str(variable_name), 1
                     elif ".each do" in line:
-
                         print(line)
                         patronEach = r".*?\.each do \|([^|]+)\|"
                         coincidenciaEach = re.search(patronEach, line)
-                        print("llega aca")
+                        print("Llega aquí")
                         if coincidenciaEach:
                             print(coincidenciaEach)
                             texto_extraido = coincidenciaEach.group(1).strip()
-                            variables[texto_extraido]=0
+                            variables[texto_extraido] = 0
                         else:
-                            mensaje= f"Error: for each mal definico"
-
+                            mensaje = f"Error en el bucle 'for each' mal definido"
 
                     else:
-                        if not ("def" in line) :
-                            mensaje= f"Error: Variable '{variable_name}' no definida"
+                        if not ("function" in line):
+                            mensaje = f"Error: Variable '{variable_name}' no definida"
                             return str(mensaje), 0
 
-    if "puts" in line:
-        
-        output_line = line.replace("puts", "").strip()
+    if "println" in line:
+        output_line = line.replace("println", "").strip("()")
         for variable_name, variable_value in variables.items():
             output_line = output_line.replace(variable_name, str(variable_value))
         try:
@@ -106,72 +98,65 @@ def evaluate_ruby_line(line):
             return str(result), 1
         except Exception as e:
             if not ("converted" in line):
-                mensaje= f"Error al evaluar la expresión '{output_line}': {str(e)}"
+                mensaje = f"Error al evaluar la expresión '{output_line}': {str(e)}"
                 return str(mensaje), 0
-    return "",3
-
+    return "", 3
 
 
 def compilar(code):
-    global variables 
-    variables = {} 
-    pattern =  r"'(\w+)'\s*=>\s*{([^}]+)}"
-    patron_condicion = r'\b(if|elsif)\s+(.+)\s*$'
-    patronifdiccionario =  r'if\s+(.*?)\.key\?\((.*?)\)\s+(.*?)\s+(.*?)\.key\?\((.*?)\)'
+    global variables
+    variables = {}
+    pattern = r'"[A-Z]+" => Dict\([^)]*\)'
     matches = list(re.finditer(pattern, code, re.DOTALL))
-    start_line =99999
-    end_line=0
-    
+    print("Soy yo",matches)
+    start_line = 99999
+    end_line = 0
+
     if matches:
-     
         for match in matches:
-            start_line = code.count('\n', 0, match.start()) -1 if code.count('\n', 0, match.start()) < start_line else start_line
-            end_line = code.count('\n', 0, match.end()) +1 if code.count('\n', 0, match.end()) > start_line else start_line
+            start_line = code.count('\n', 0, match.start()) - 1 if code.count('\n', 0, match.start()) < start_line else start_line
+            end_line = code.count('\n', 0, match.end()) + 1 if code.count('\n', 0, match.end()) > start_line else start_line
 
     lines = code.split('\n')
-    for index,line in enumerate(lines):
-        
+    for index, line in enumerate(lines):
         if index >= start_line and index <= end_line:
-
-            lineas_seleccionadas = lines[start_line:end_line+1]
+            lineas_seleccionadas = lines[start_line:end_line + 1]
             resultado = '\n'.join(lineas_seleccionadas)
             match = re.search(r'(\w+)\s*=', resultado)
+            validacion = procesar_bloques(resultado)
 
-            validacion= procesar_bloques(resultado)
-            
             if match and not validacion:
-                name =match.group(1)
+                name = match.group(1)
                 if name not in variables:
                     variables[name] = diccionario(code)
             else:
                 return validacion
         else:
-
-            evaluate, status = evaluate_ruby_line(line)
+            evaluate, status = evaluate_julia_line(line)
             if status == 0:
-                return evaluate            
-    output1 = compilarruby(code)
+                return evaluate
+    output1 = compilarjulia(code)
     return output1
 
 
 
 
 
-def compilarruby(code):
-    resultado = subprocess.run(["ruby"], input=code, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+# Función para compilar código Julia
+def compilarjulia(code):
+    resultado = subprocess.run(["julia", "-e", code], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     print("Errores:")
     print(resultado.stderr)
 
     print("Salida:")
     return resultado.stdout
 
-    
-
-
+# Función para procesar diccionarios en la nueva sintaxis de Julia
 def diccionario(code):
-    pattern = r"'(\w+)'\s*=>\s*{([^}]+)}"
+    # Define el patrón para encontrar diccionarios en la nueva sintaxis de Julia
+    pattern = r'"(\w+)" => Dict\((.*?)\)'
 
-    # Encuentra todas las coincidencias en el código Ruby
+    # Encuentra todas las coincidencias en el código Julia
     matches = re.findall(pattern, code, re.DOTALL)
 
     # Crea un diccionario en Python a partir de las coincidencias
@@ -181,15 +166,11 @@ def diccionario(code):
         conversion_data = match[1].split(',')
         conversion_dict = {}
         for item in conversion_data:
-            key, value = item.split('=>')
-            conversion_dict[key.strip()] = float(value.strip())
+            key, value = item.strip().split("=>")
+            conversion_dict[key.strip('"').strip()] = float(value.strip())
         exchange_rates_dict[currency] = conversion_dict
 
-    
     return exchange_rates_dict
-
-
-
 
 def verificar_errores_linea_por_linea(bloque, numero_bloque):
     lineas = bloque.strip().split('\n')

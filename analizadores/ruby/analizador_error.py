@@ -42,35 +42,35 @@ def verificar_equilibrio_ruby(codigo):
    
       
 
-def validar_estructuras_ruby(codigo_ruby):
-    lineas = codigo_ruby.split('\n')
-    variables_definidas = set()
-    patrones = {
-        r'^\s*if\s*(\([^)]+\))?([^:]+)$': "if",
-        r'^\s*while\s*(\([^)]+\))?([^:]+)$': "while",
-        r'^\s*elsif\s*(\([^)]+\))?([^:]+)$': "elsif",
-        r'^\s*unless\s*(\([^)]+\))?([^:]+)$': "unless", 
-        r'^\s*until\s*(\([^)]+\))?([^:]+)$': "until"
-    }
+# def validar_estructuras_ruby(codigo_ruby):
+#     lineas = codigo_ruby.split('\n')
+#     variables_definidas = set()
+#     patrones = {
+#         r'^\s*if\s*(\([^)]+\))?([^:]+)$': "if",
+#         r'^\s*while\s*(\([^)]+\))?([^:]+)$': "while",
+#         r'^\s*elsif\s*(\([^)]+\))?([^:]+)$': "elsif",
+#         r'^\s*unless\s*(\([^)]+\))?([^:]+)$': "unless", 
+#         r'^\s*until\s*(\([^)]+\))?([^:]+)$': "until"
+#     }
 
-    for numero_linea, linea in enumerate(lineas, start=1):
-        for patron, estructura in patrones.items():
-            if re.search(r'\b' + estructura + r'\b', linea) and not re.search(r'(["\']).*?\1', linea):
-                match = re.match(patron, linea)
-                if match:
-                    condicion = match.group(2).strip()
-                    for token in re.findall(r'\w+|\d+|\S', condicion):
-                        if token.isalpha() and token not in variables_definidas and token != "then":
-                            if not (token == "key"):
-                                print(f"Error en la línea {numero_linea}: La variable '{token}' en la condición del '{estructura}' no está definida en líneas anteriores.")
-                                return f"Error en la línea {numero_linea}: La variable '{token}' en la condición del '{estructura}' no está definida en líneas anteriores."
-                else:
-                    print(f"Error en la línea {numero_linea}: La línea '{linea.strip()}' no tiene la sintaxis correcta de un '{estructura}'.")
-                    return f"Error en la línea {numero_linea}: La línea '{linea.strip()}' no tiene la sintaxis correcta de un '{estructura}'."
+#     for numero_linea, linea in enumerate(lineas, start=1):
+#         for patron, estructura in patrones.items():
+#             if re.search(r'\b' + estructura + r'\b', linea) and not re.search(r'(["\']).*?\1', linea):
+#                 match = re.match(patron, linea)
+#                 if match:
+#                     condicion = match.group(2).strip()
+#                     for token in re.findall(r'\w+|\d+|\S', condicion):
+#                         if token.isalpha() and token not in variables_definidas and token != "then":
+#                             if not (token == "key"):
+#                                 print(f"Error en la línea {numero_linea}: La variable '{token}' en la condición del '{estructura}' no está definida en líneas anteriores.")
+#                                 return f"Error en la línea {numero_linea}: La variable '{token}' en la condición del '{estructura}' no está definida en líneas anteriores."
+#                 else:
+#                     print(f"Error en la línea {numero_linea}: La línea '{linea.strip()}' no tiene la sintaxis correcta de un '{estructura}'.")
+#                     return f"Error en la línea {numero_linea}: La línea '{linea.strip()}' no tiene la sintaxis correcta de un '{estructura}'."
 
-        # Buscar variables definidas en líneas anteriores
-        for variable in re.findall(r'\w+', linea):
-            variables_definidas.add(variable)
+#         # Buscar variables definidas en líneas anteriores
+#         for variable in re.findall(r'\w+', linea):
+#             variables_definidas.add(variable)
 
 
 
