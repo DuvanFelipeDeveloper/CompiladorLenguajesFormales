@@ -15,8 +15,8 @@ def consumir_api():
             analysis = response.json()
             response_text.delete("1.0", "end")
             
-            for pattern_name, occurrences in analysis["ExpresionesRegulares"].items():
-                response_text.insert("1.0",f'Expresion regular {pattern_name}: {occurrences} ' +  "\n")
+            for pattern_name in analysis["ExpresionesRegulares"]:
+                response_text.insert("1.0",f'Expresion regular {pattern_name} ' +  "\n")
             response_text.insert("1.0","Paradigma " + analysis["paradigma"] +  "\n")
             response_text.insert("1.0","Lenguaje " + analysis["lenguaje"] +  "\n")
             response_text.insert("1.0","error " + analysis["error"] +  "\n")

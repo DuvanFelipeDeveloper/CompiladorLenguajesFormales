@@ -185,7 +185,7 @@ def diccionario(code):
             conversion_dict[key.strip()] = float(value.strip())
         exchange_rates_dict[currency] = conversion_dict
 
-    
+    print("aca esta el diccionario hp" , exchange_rates_dict)
     return exchange_rates_dict
 
 
@@ -221,8 +221,6 @@ def procesar_bloques(hash_str):
             return errores_bloque
     
     partes_no_coincidentes = re.split(patron_bloque_datos, hash_str)
-
-    # Analizar las partes que no coinciden con bloques
     
     for i, parte in enumerate(partes_no_coincidentes):
         es_linea_valida = verificar_errores_linea_por_linea(parte, i + len(bloques) + 1)

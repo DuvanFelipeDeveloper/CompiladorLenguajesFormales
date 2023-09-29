@@ -1,46 +1,59 @@
 import re
 
-def verificar_equilibrio_ruby(codigo):
-    stack = []
-    lineas = codigo.split("\n")
+
+def validar_codigo(texto):
+    palabras_clave = r'\b(if|unless|while|until|for|given|when|case|sub)\b'
+    
+    # Buscamos la primera palabra clave en el texto
+    coincidencia_palabra_clave = re.search(palabras_clave, texto)
+    if not coincidencia_palabra_clave:
+        return "Error: El código no inicia con ninguna palabra clave válida."
+
+    # Extraemos la palabra clave encontrada
+    palabra_clave_inicial = coincidencia_palabra_clave.group()
+
+    # Verificamos que no haya más palabras después de la palabra clave inicial (excepto "sub")
+    siguiente_texto = texto[coincidencia_palabra_clave.end():].strip()
+    if siguiente_texto and not siguiente_texto.startswith("(") and palabra_clave_inicial != "sub":
+        return f"Error: Después de '{palabra_clave_inicial}' no debe haber más palabras."
+
+    # Utilizamos una pila para realizar un seguimiento de las estructuras
+    pila = []
+
+    for caracter in texto:
+        if caracter in '([{':
+            # Si encontramos un carácter de apertura, lo agregamos a la pila
+            pila.append(caracter)
+        elif caracter in ')]}':
+            # Si encontramos un carácter de cierre, verificamos si coincide con el último de la pila
+            if not pila:
+                return f"Error: Cierre '{caracter}' sin apertura correspondiente."
+            
+            ultimo = pila.pop()
+            if (ultimo == '(' and caracter != ')') or \
+               (ultimo == '[' and caracter != ']') or \
+               (ultimo == '{' and caracter != '}'):
+                return f"Error: Cierre '{caracter}' no coincide con la apertura '{ultimo}'."
+
+    # Después de procesar todo el texto, verificamos si hay aperturas sin cierre
+    if pila:
+        return f"Error: Apertura '{pila[-1]}' sin cierre correspondiente."
+
+    lineas = texto.split("\n")
 
     for numero_linea, linea in enumerate(lineas, start=1):
-        inicio = re.search(r'\b(if |unless|while|until|for|case|class|def)\b', linea)
-        final = re.search(r'\bend\b', linea)
-
-        if inicio:
-            stack.append({inicio.group(), numero_linea})
-        if final:
-            if not stack:
-                print(f"Falta un 'end' en la línea {numero_linea}")
-                return f"Falta un 'end' en la línea {numero_linea}"
-            else:
-                stack.pop()
 
         if("if" in linea):
-            if "key" in linea:
-                pattern = r'if\s+\w+\s*\.key\?\(\w+\)\s*(?:&&\s*\w+\s*\.key\?\(\w+\))?\s*$'
+            if "exists" in linea:
+                pattern =  r'^\s*if\s*+\(exists\s+\$([a-zA-Z_]\w*)\{\$([a-zA-Z_]\w*)\}\s+&&\s+exists\s+\$([a-zA-Z_]\w*)\{\$([a-zA-Z_]\w*)\}\{\$([a-zA-Z_]\w*)\}\)\s+{'
+                pattern2 =  r'^\s*if\s*+\(\s*+\$([a-zA-Z_]\w*)\{\$([a-zA-Z_]\w*)\}\s+&&\s+\s*+\$([a-zA-Z_]\w*)\{\$([a-zA-Z_]\w*)\}\{\$([a-zA-Z_]\w*)\}\)\s+{'
                 if re.match(pattern, linea):
                     print("La cadena es válida.")
+                elif re.match(pattern2, linea):
+                    print("La cadena es válida.")
                 else:
-                    pattern2 = r'^\s*if\s+\w+\s*\[\w+\]\.key\?\(\w+\)\s*$'
-                    if re.match(pattern2, linea):
-                        print("La cadena es válida.")
-                    else:
-                        return f"Error en el if en la línea {numero_linea}"
-                    
-                    
-                
-    # Verificar si hay 'end' sin pareja
-    for numero_linea,estructura  in stack:
-        print(f"falta un end para '{estructura}' en el código linea '{numero_linea}'")
-        return f"falta un end para '{estructura}' en el código linea '{numero_linea}'"
-    resultado =validar_diccionario_ruby(codigo)
+                    return f"Error en el if en la línea {numero_linea}"
 
-    if resultado:
-        return str(resultado)
-   
-      
 
 def validar_estructuras_ruby(codigo_ruby):
     lineas = codigo_ruby.split('\n')

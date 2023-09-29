@@ -46,10 +46,10 @@ def analizador(code):
         output = compiladorJulia.compilar(code)
     
     elif(lenguaje == "perl"):
-        error=aePerl.verificar_equilibrio_ruby(code)
-
+        error=aePerl.validar_codigo(code)
+        print("perl" , error)
         if(not error):
-            error =aePerl.validar_estructuras_ruby(code)
+            # error =aePerl.validar_estructuras_ruby(code)
             if(not error):
                 error = ""
         output = compiladorPerl.compilar(code)

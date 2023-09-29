@@ -1,19 +1,11 @@
 import re
 
-<<<<<<< HEAD:analizadores/julia/analizador_error.py
-=======
-# Función para verificar el equilibrio de las estructuras de control en Ruby
->>>>>>> a39ec5a630edb8027575b49cc88b61a5ab8c742e:analizadores/analizador_error.py
 def verificar_equilibrio_ruby(codigo):
     stack = []  # Utilizamos una pila para rastrear las estructuras de control abiertas
     lineas = codigo.split("\n")
 
     for numero_linea, linea in enumerate(lineas, start=1):
-<<<<<<< HEAD:analizadores/julia/analizador_error.py
         inicio = re.search(r'\b(if |unless|while|until|for|case|class|def)\b', linea)
-=======
-        inicio = re.search(r'\b(if|unless|while|until|for|case|class|def)\b', linea)
->>>>>>> a39ec5a630edb8027575b49cc88b61a5ab8c742e:analizadores/analizador_error.py
         final = re.search(r'\bend\b', linea)
 
         if inicio:

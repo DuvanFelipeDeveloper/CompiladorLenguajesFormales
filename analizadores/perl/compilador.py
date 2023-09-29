@@ -5,7 +5,7 @@ import subprocess
 variables = {}
 
 # Expresiones regulares para detectar declaraciones de variables y usos de variables
-variable_declaration_pattern = r'^\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*)$'
+variable_declaration_pattern = r"my\s+\$([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*);"
 variable_usage_pattern = r'\b([a-zA-Z_][a-zA-Z0-9_]*)\b'
 patron = r'^\s*puts\s+"[^"]*"'
 
@@ -15,15 +15,17 @@ patron_bloque = r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+,\s*)"
 patron_bloque_penultimo= r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+\s*)"
 patron_fin_bloque = r"\s*\}"
 patron_inicio_bloque_personalizado = r"\s*'?\w+'?\s*=>\s*{"
-patrondiccionariovar = r'^\s*(\w+)\s*=\s*(\w+)\s*\*\s*(\w+)\[(\w+)\]\[(\w+)\]'
+
+patrondiccionariovar = r"\s*my\s+\$([a-zA-Z_]\w*)\s*=\s*\$([a-zA-Z_]\w*)\s*\*\s*\$([a-zA-Z_]\w*)\{\$([a-zA-Z_]\w*)\}\{\$([a-zA-Z_]\w*)\};"
 
 def evaluate_ruby_line(line):
     match_declaration = re.match(variable_declaration_pattern, line)
     vardiccionario = re.match(patrondiccionariovar, line)
 
 
+
     if(vardiccionario):
-        print("esntra bien")
+
         newvar = vardiccionario.group(1)
         amount = vardiccionario.group(2)
         varglobal = vardiccionario.group(3)
@@ -50,6 +52,7 @@ def evaluate_ruby_line(line):
             if (variable_value.startswith('"') and variable_value.endswith('"')) or \
             (variable_value.startswith("'") and variable_value.endswith("'")):
                 variables[variable_name] = variable_value
+
             elif re.match(r'^\[[^\[\]]*\]$', variable_value):
                 patronArray = r'(\d+|"[^"]+"|\w+)'
                 coincidenciasArray = re.findall(patronArray, line)
@@ -73,18 +76,18 @@ def evaluate_ruby_line(line):
         match_usage = re.findall(variable_usage_pattern, line)
         for variable_name in match_usage:
             if variable_name not in variables:
-                keywords = {"puts", "if", "key", "else", "end", "true", "false", "elsif","each","do","even","for"}
+                keywords = {"exists", "print", "if","true", "false","for","else", "my"}
                 if variable_name not in keywords:
                     if re.match(patron, line):
                         return str(variable_name),1
                     elif ".each do" in line:
 
-                        print(line)
+                  
                         patronEach = r".*?\.each do \|([^|]+)\|"
                         coincidenciaEach = re.search(patronEach, line)
-                        print("llega aca")
+   
                         if coincidenciaEach:
-                            print(coincidenciaEach)
+               
                             texto_extraido = coincidenciaEach.group(1).strip()
                             variables[texto_extraido]=0
                         else:
@@ -92,15 +95,17 @@ def evaluate_ruby_line(line):
 
 
                     else:
-                        if not ("def" in line) :
+                        if not ("print" in line) :
                             mensaje= f"Error: Variable '{variable_name}' no definida"
                             return str(mensaje), 0
 
-    if "puts" in line:
+    if "print" in line:
         
-        output_line = line.replace("puts", "").strip()
+        output_line = line.replace("print", "").strip()
+        print("acaaa",output_line)
         for variable_name, variable_value in variables.items():
-            output_line = output_line.replace(variable_name, str(variable_value))
+            output_line = output_line.replace("$"+variable_name, str(variable_value))
+        print("accaaaa 2 " , output_line)
         try:
             result = eval(output_line)
             return str(result), 1
@@ -116,9 +121,8 @@ def compilar(code):
     global variables 
     variables = {} 
     pattern =  r"'(\w+)'\s*=>\s*{([^}]+)}"
-    patron_condicion = r'\b(if|elsif)\s+(.+)\s*$'
-    patronifdiccionario =  r'if\s+(.*?)\.key\?\((.*?)\)\s+(.*?)\s+(.*?)\.key\?\((.*?)\)'
     matches = list(re.finditer(pattern, code, re.DOTALL))
+    print(matches)
     start_line =99999
     end_line=0
     
@@ -148,17 +152,22 @@ def compilar(code):
         else:
 
             evaluate, status = evaluate_ruby_line(line)
+            print("aca esta", evaluate, line)
             if status == 0:
-                return evaluate            
-    output1 = compilarruby(code)
+                return evaluate    
+
+
+    output1 = compilarperl(code)
     return output1
 
 
 
 
 
-def compilarruby(code):
-    resultado = subprocess.run(["ruby"], input=code, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+def compilarperl(code):
+    resultado = subprocess.run(["perl", "-e", code], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    
     print("Errores:")
     print(resultado.stderr)
 

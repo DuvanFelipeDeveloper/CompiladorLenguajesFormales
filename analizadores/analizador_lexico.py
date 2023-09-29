@@ -5,7 +5,7 @@ def build_automata():
     keywords = {
         "ruby": ["def ", "puts ", "end ","print "],
         "julia": ["function", "println"],
-        "perl": ["sub ", "print "]
+        "perl": ["sub ", "print ", "if(", "if ("]
     }
 
     for lang, words in keywords.items():

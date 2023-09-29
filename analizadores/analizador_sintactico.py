@@ -26,27 +26,35 @@ def validate_code_julia(code):
 
 
 def validate_code_perl(code):
+
+ 
     # Expresiones regulares para validar patrones comunes en el código de conversión de divisas
     patterns = {
         'import_statement': r'use\s+Money;',
         'configure_statement': r'Money::Rails\.configure\s+do\s+my\s+\$config\s+=.+?;\s+end',
         'print_statement': r'print\s+".+"',
         'user_input_statement': r'my\s+\$\w+\s+=\s+<STDIN>;\s+chomp\s+\$\w+;',
-        'if_statement': r'if\s+\(.+\)\s+\{.+?\}',
+        'user_input_statement ': r"my\s+\$([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.*);",
+        'if_statement':  r'if\s+.+',
         'for_loop': r'foreach\s+my\s+\$[\w_]+\s+\(.+?\)\s+\{.+?\}',
         'variable_assignment': r'my\s+\$\w+\s+=\s+.+?;',
         'function_call': r'my\s+\$\w+\s+=\s+\$[\w_]+\(.+?\);',
         'math_operation': r'\$[\w_]+\s*[+\-*\/%]\s*[\d\w_]+'
     }
 
-    # Buscar coincidencias en el código
-    matches = {}
-    for pattern_name, pattern in patterns.items():
-        match = re.search(pattern, code)
-        if match:
-            matches[pattern_name] = match.group()
+    coincidencias = []
 
-    return matches
+    # Dividir el código en líneas
+    lineas = code.split('\n')
+
+    # Iterar a través de las líneas y buscar coincidencias con las expresiones regulares
+    for linea in lineas:
+        for nombre_expresion, patron in patterns.items():
+            if re.search(patron, linea):
+                coincidencias.append(f"Línea: {linea.strip()}\nExpresión regular: {nombre_expresion}\n")
+
+    # Imprimir las coincidencias encontradas
+    return coincidencias
 
 
 
