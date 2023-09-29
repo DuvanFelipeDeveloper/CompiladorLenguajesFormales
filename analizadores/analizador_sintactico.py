@@ -17,13 +17,19 @@ def validate_code_julia(code):
         'Dictionary': r'"[A-Z]+" => Dict\([^)]*\)'
     }
     
-    matches = {}
-    for pattern_name, pattern in patterns.items():
-        match = re.search(pattern, code)
-        if match:
-            matches[pattern_name] = match.group()
+    coincidencias = []
 
-    return matches
+    # Dividir el código en líneas
+    lineas = code.split('\n')
+
+    # Iterar a través de las líneas y buscar coincidencias con las expresiones regulares
+    for linea in lineas:
+        for nombre_expresion, patron in patterns.items():
+            if re.search(patron, linea):
+                coincidencias.append(f"Línea: {linea.strip()}\nExpresión regular: {nombre_expresion}\n")
+
+    # Imprimir las coincidencias encontradas
+    return coincidencias
 
 
 def validate_code_perl(code):
@@ -75,13 +81,19 @@ def validate_code_ruby(code):
     }
 
     # Buscar coincidencias en el código
-    matches = {}
-    for pattern_name, pattern in patterns.items():
-        match = re.search(pattern, code)
-        if match:
-            matches[pattern_name] = match.group()
+    coincidencias = []
 
-    return matches
+    # Dividir el código en líneas
+    lineas = code.split('\n')
+
+    # Iterar a través de las líneas y buscar coincidencias con las expresiones regulares
+    for linea in lineas:
+        for nombre_expresion, patron in patterns.items():
+            if re.search(patron, linea):
+                coincidencias.append(f"Línea: {linea.strip()}\nExpresión regular: {nombre_expresion}\n")
+
+    # Imprimir las coincidencias encontradas
+    return coincidencias
 
 
 

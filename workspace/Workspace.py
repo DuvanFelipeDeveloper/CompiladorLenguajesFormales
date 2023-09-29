@@ -15,18 +15,28 @@ def consumir_api():
             analysis = response.json()
             response_text.delete("1.0", "end")
             
-            for pattern_name in analysis["ExpresionesRegulares"]:
-                response_text.insert("1.0",f'Expresion regular {pattern_name} ' +  "\n")
-            response_text.insert("1.0","Paradigma " + analysis["paradigma"] +  "\n")
-            response_text.insert("1.0","Lenguaje " + analysis["lenguaje"] +  "\n")
-            response_text.insert("1.0","error " + analysis["error"] +  "\n")
-            response_text.insert("1.0","salida " + analysis["output"]+  "\n")
+            if "ExpresionesRegulares" in analysis:
+                for pattern_name in analysis["ExpresionesRegulares"]:
+                    response_text.insert("1.0", f'Expresion regular {pattern_name} ' + "\n")
+
+            if "paradigma" in analysis:
+                response_text.insert("1.0", "Paradigma " + analysis["paradigma"] + "\n")
+
+            if "lenguaje" in analysis:
+                response_text.insert("1.0", "Lenguaje " + analysis["lenguaje"] + "\n")
+
+            if "error" in analysis:
+                response_text.insert("1.0", "error " + analysis["error"] + "\n")
+
+            if "output" in analysis:
+                response_text.insert("1.0", "salida " + analysis["output"] + "\n")
+
         else:
             response_text.delete("1.0", "end")
             response_text.insert("1.0", "Error: No se pudo obtener datos de la API")
     except Exception as e:
         response_text.delete("1.0", "end")
-        response_text.insert("1.0", "Error: " + str(e))
+        response_text.insert("1.0", "Error: " + "De entrada validar linea 1")
 
 
 root = tk.Tk()

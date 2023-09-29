@@ -75,10 +75,10 @@ def evaluate_julia_line(line):
                     if re.match(patron, line):
                         return str(variable_name), 1
                     elif ".each do" in line:
-                        print(line)
+                  
                         patronEach = r".*?\.each do \|([^|]+)\|"
                         coincidenciaEach = re.search(patronEach, line)
-                        print("Llega aquí")
+                 
                         if coincidenciaEach:
                             print(coincidenciaEach)
                             texto_extraido = coincidenciaEach.group(1).strip()
@@ -110,7 +110,7 @@ def compilar(code):
     variables = {}
     pattern = r'"[A-Z]+" => Dict\([^)]*\)'
     matches = list(re.finditer(pattern, code, re.DOTALL))
-    print("Soy yo",matches)
+
     start_line = 99999
     end_line = 0
 
@@ -142,7 +142,7 @@ def compilar(code):
 
 
 def compilarjulia(code):
-    print(code)
+  
     try:
         
         # Ejecutar el intérprete de Julia
@@ -171,10 +171,10 @@ def diccionario(code):
 
     # Encuentra todas las coincidencias en el código Ruby
     matches = re.findall(pattern, aux, re.DOTALL)
-    print(aux)
+
     # Crea un diccionario en Python a partir de las coincidencias
     exchange_rates_dict = {}
-    print(matches)
+ 
     for match in matches:
         
         currency = match[0]
@@ -185,7 +185,7 @@ def diccionario(code):
             conversion_dict[key.strip()] = float(value.strip())
         exchange_rates_dict[currency] = conversion_dict
 
-    print("Codigo",exchange_rates_dict)
+   
     return exchange_rates_dict
 
 

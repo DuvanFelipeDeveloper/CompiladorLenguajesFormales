@@ -73,7 +73,7 @@ def evaluate_ruby_line(line):
         match_usage = re.findall(variable_usage_pattern, line)
         for variable_name in match_usage:
             if variable_name not in variables:
-                keywords = {"puts", "if", "key", "else", "end", "true", "false", "elsif","each","do","even","for"}
+                keywords = {"puts", "if", "key", "else", "end", "true", "false", "elsif","each","do","even","for","class"}
                 if variable_name not in keywords:
                     if re.match(patron, line):
                         return str(variable_name),1

@@ -55,7 +55,7 @@ def analizador(code):
                 error = ""
         output = compiladorPerl.compilar(code)
     
-
+    print()
 
     return lenguaje, paradigma, expressionAnalysis,error,output
     
