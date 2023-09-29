@@ -37,10 +37,11 @@ def analizador(code):
         output = compiladorRuby.compilar(code)
     
     elif(lenguaje == "julia"):
-        error=aeJulia.verificar_equilibrio_ruby(code)
-
+        
+        error=aeJulia.verificar_equilibrio_julia(code)
+        
         if(not error):
-            error =aeJulia.validar_estructuras_ruby(code)
+            error =aeJulia.validar_estructuras_julia(code)
             if(not error):
                 error = ""
         output = compiladorJulia.compilar(code)
