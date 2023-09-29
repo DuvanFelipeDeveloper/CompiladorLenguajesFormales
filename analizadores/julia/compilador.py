@@ -29,6 +29,8 @@ def evaluate_julia_line(line):
         elemnt1 = vardiccionario.group(4)
         elemen2 = vardiccionario.group(5)
 
+        
+        print(newvar,amount,varglobal,elemnt1,elemen2)
         if newvar not in variables:
             try:
                 variables[newvar] = int(variables[amount]) * variables[varglobal][variables[elemnt1].replace("'", "").replace('"', '')][variables[elemen2]]
@@ -139,38 +141,54 @@ def compilar(code):
     return output1
 
 
-
-
-
-# Función para compilar código Julia
 def compilarjulia(code):
-    resultado = subprocess.run(["julia", "-e", code], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    print("Errores:")
-    print(resultado.stderr)
+    print(code)
+    try:
+        
+        # Ejecutar el intérprete de Julia
+        resultado = subprocess.run(["julia"], input=code.replace("'",'"'), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-    print("Salida:")
-    return resultado.stdout
+        # Imprimir errores estándar si los hay
+        print("Errores:")
+        print(resultado.stderr)
 
-# Función para procesar diccionarios en la nueva sintaxis de Julia
+        # Imprimir la salida del programa Julia
+        print("Salida:")
+        
+        return resultado.stdout
+
+    except Exception as e:
+        print("Error:", str(e))
+        return None
+
+
+
+
 def diccionario(code):
-    # Define el patrón para encontrar diccionarios en la nueva sintaxis de Julia
-    pattern = r'"(\w+)" => Dict\((.*?)\)'
+    
+    aux=code.replace("Dict(","{").replace(")","}").replace('"',"'")
+    pattern = r"'(\w+)'\s*=>\s*{([^}]+)}"
 
-    # Encuentra todas las coincidencias en el código Julia
-    matches = re.findall(pattern, code, re.DOTALL)
-
+    # Encuentra todas las coincidencias en el código Ruby
+    matches = re.findall(pattern, aux, re.DOTALL)
+    print(aux)
     # Crea un diccionario en Python a partir de las coincidencias
     exchange_rates_dict = {}
+    print(matches)
     for match in matches:
+        
         currency = match[0]
         conversion_data = match[1].split(',')
         conversion_dict = {}
         for item in conversion_data:
-            key, value = item.strip().split("=>")
-            conversion_dict[key.strip('"').strip()] = float(value.strip())
+            key, value = item.split('=>')
+            conversion_dict[key.strip()] = float(value.strip())
         exchange_rates_dict[currency] = conversion_dict
 
+    print("Codigo",exchange_rates_dict)
     return exchange_rates_dict
+
+
 
 def verificar_errores_linea_por_linea(bloque, numero_bloque):
     lineas = bloque.strip().split('\n')

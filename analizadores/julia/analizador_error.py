@@ -23,7 +23,11 @@ def verificar_equilibrio_julia(codigo):
                 if re.match(pattern, linea):
                     print("La cadena es válida.")
                 else:
-                    return f"Error en el if en la línea {numero_linea}"
+                    pattern2 = r'^\s*if\s+haskey\([^)]+\)\s*$'
+                    if re.match(pattern2, linea):
+                        print("La cadena es válida.")
+                    else:
+                        return f"Error en el if en la línea {numero_linea}"
 
 
     # Verificar si hay 'end' sin pareja

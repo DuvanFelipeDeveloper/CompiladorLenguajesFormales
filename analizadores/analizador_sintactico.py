@@ -13,7 +13,8 @@ def validate_code_julia(code):
         'while_loop': r'while\s+.+',
         'variable_assignment': r'(?<!if)\s*\w+\s*=\s*.+',
         'function_call': r'\w+\(.+\)',
-        'math_operation': r'[\w_]+\s*[\+\-\*/%]\s*[\w_]+'
+        'math_operation': r'[\w_]+\s*[\+\-\*/%]\s*[\w_]+',
+        'Dictionary': r'"[A-Z]+" => Dict\([^)]*\)'
     }
     
     matches = {}
@@ -55,13 +56,14 @@ def validate_code_ruby(code):
     patterns = {
         'import_statement': r'require\s+["\']money["\']',
         'configure_statement': r'Money::Rails\.configure\s+do\s+\|config\|\s+.+end',
-        'print_statement': r'puts\s+".+"',
+        'print_statement': r'puts\s+(?:\w+|".+")',
         'user_input_statement': r'print\s+".+"\s+\+\s+(?:gets\..+)?',
-        'if_statement': r'if\s+.+\s+&&\s+.+:',
+        'if_statement': r'if\s+\w+\s*\.key\?\(\w+\)\s*(?:&&\s*\w+\s*\.key\?\(\w+\))?\s*$',
         'for_loop': r'currencies.each\s+\{\s+\|\w+\|\s+.+\s+\}',
         'variable_assignment': r'\w+\s*=\s*.+',
         'function_call': r'\w+\.(?:chomp|upcase|to_f|round|puts)\s*.+',
-        'math_operation': r'\w+\s*[*+-\/%]\s*[\d\w_]+'
+        'math_operation': r'\w+\s*[*+-\/%]\s*[\d\w_]+',
+        'Dictionary': r"'\w+' => \{[^}]*\}"
     }
 
     # Buscar coincidencias en el código
