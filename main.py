@@ -26,7 +26,6 @@ def analizador(code):
     else:
         expressionAnalysis ="no compatible"
     
-    
     if(lenguaje == "ruby"):
         error=aeRuby.verificar_equilibrio_ruby(code)
 
@@ -55,7 +54,6 @@ def analizador(code):
                 error = ""
         output = compiladorPerl.compilar(code)
     
-    print()
 
     return lenguaje, paradigma, expressionAnalysis,error,output
     

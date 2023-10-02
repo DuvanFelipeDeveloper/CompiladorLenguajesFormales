@@ -8,7 +8,6 @@ def consumir_api():
     texto_a_enviar = input_text.get("1.0", "end-1c")
 
     try:
-
         response = requests.post(url, json={"texto": texto_a_enviar})
 
         if response.status_code == 200:
@@ -17,19 +16,20 @@ def consumir_api():
             
             if "ExpresionesRegulares" in analysis:
                 for pattern_name in analysis["ExpresionesRegulares"]:
-                    response_text.insert("1.0", f'Expresion regular {pattern_name} ' + "\n")
+                    response_text.insert("1.0", f'Expresion regular: {pattern_name} ' + "\n")
 
             if "paradigma" in analysis:
-                response_text.insert("1.0", "Paradigma " + analysis["paradigma"] + "\n")
+                response_text.insert("1.0", "Paradigma " + analysis["paradigma"] + "\n\n")
 
             if "lenguaje" in analysis:
-                response_text.insert("1.0", "Lenguaje " + analysis["lenguaje"] + "\n")
+                
+                response_text.insert("1.0", "Lenguaje " + analysis["lenguaje"] + "\n\n")
 
             if "error" in analysis:
-                response_text.insert("1.0", "error " + analysis["error"] + "\n")
+                response_text.insert("1.0", "" + analysis["error"] + "\n")
 
             if "output" in analysis:
-                response_text.insert("1.0", "salida " + analysis["output"] + "\n")
+                response_text.insert("1.0", "Resultado : " + analysis["output"] + "\n")
 
         else:
             response_text.delete("1.0", "end")
@@ -40,7 +40,7 @@ def consumir_api():
 
 
 root = tk.Tk()
-root.title("Compilador")
+root.title("API de Verificacion de Errores con Análisis de Expresiones Regulares")
 
 
 input_text = scrolledtext.ScrolledText(root, width=80, height=20)

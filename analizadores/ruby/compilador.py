@@ -15,6 +15,7 @@ patron_bloque = r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+,\s*)"
 patron_bloque_penultimo= r"\s*'[\w\s]+' => (?:\{[^}]*\}|\d+\.\d+\s*)"
 patron_fin_bloque = r"\s*\}"
 patron_inicio_bloque_personalizado = r"\s*'?\w+'?\s*=>\s*{"
+
 patrondiccionariovar = r'^\s*(\w+)\s*=\s*(\w+)\s*\*\s*(\w+)\[(\w+)\]\[(\w+)\]'
 
 def evaluate_ruby_line(line):
@@ -87,8 +88,7 @@ def evaluate_ruby_line(line):
                             texto_extraido = coincidenciaEach.group(1).strip()
                             variables[texto_extraido]=0
                         else:
-                            mensaje= f"Error: for each mal definico"
-
+                            mensaje= f"Error: for each mal definido"
 
                     else:
                         if not ("def" in line) :
@@ -152,10 +152,6 @@ def compilar(code):
     output1 = compilarruby(code)
     return output1
 
-
-
-
-
 def compilarruby(code):
     resultado = subprocess.run(["ruby"], input=code, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     print("Errores:")
@@ -164,16 +160,11 @@ def compilarruby(code):
     print("Salida:")
     return resultado.stdout
 
-    
-
-
 def diccionario(code):
     pattern = r"'(\w+)'\s*=>\s*{([^}]+)}"
 
-    # Encuentra todas las coincidencias en el código Ruby
     matches = re.findall(pattern, code, re.DOTALL)
 
-    # Crea un diccionario en Python a partir de las coincidencias
     exchange_rates_dict = {}
     for match in matches:
         currency = match[0]
@@ -184,10 +175,7 @@ def diccionario(code):
             conversion_dict[key.strip()] = float(value.strip())
         exchange_rates_dict[currency] = conversion_dict
 
-    print("aca esta el diccionario hp" , exchange_rates_dict)
     return exchange_rates_dict
-
-
 
 
 def verificar_errores_linea_por_linea(bloque, numero_bloque):
